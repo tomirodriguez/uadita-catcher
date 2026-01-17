@@ -1,6 +1,6 @@
 // components/Game/Game.tsx
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, type RefObject } from 'react'
 import type { GameState, GameStatus, InputState } from '../../types/game'
 
 // Core systems
@@ -74,6 +74,9 @@ export function Game() {
   // Canvas ref for rendering
   const canvasRef = useRef<GameCanvasHandle>(null)
 
+  // Separate ref for the actual canvas element (for touch controls)
+  const canvasElementRef = useRef<HTMLCanvasElement | null>(null)
+
   // Game state stored in ref to avoid re-renders during gameplay
   const gameStateRef = useRef<GameState>(createInitialGameState(getHighScore()))
 
@@ -103,23 +106,29 @@ export function Game() {
   })
 
   // Input handling
-  const keyboardInput = useInput()
-  const touchInput = useTouchControls(
-    canvasRef as React.RefObject<HTMLCanvasElement | null>
-  )
+  const { input: keyboardInput, consumePause } = useInput()
+  const touchInput = useTouchControls(canvasElementRef as RefObject<HTMLCanvasElement | null>)
 
   // Sound effects
   const sounds = useSoundEffects()
   usePreloadSounds()
 
-  // Combined input state
-  const getInputState = useCallback((): InputState => {
-    return {
+  // Store input in a ref so the game loop always has access to current input
+  const inputRef = useRef<InputState>({ left: false, right: false, pause: false })
+
+  // Update input ref whenever keyboard or touch input changes
+  useEffect(() => {
+    inputRef.current = {
       left: keyboardInput.left || touchInput.left,
       right: keyboardInput.right || touchInput.right,
       pause: keyboardInput.pause,
     }
   }, [keyboardInput, touchInput])
+
+  // Combined input state - reads from ref for current values
+  const getInputState = useCallback((): InputState => {
+    return inputRef.current
+  }, [])
 
   /**
    * Synchronizes game state ref with UI state for display updates.
@@ -178,6 +187,7 @@ export function Game() {
 
       // Handle pause
       if (input.pause) {
+        consumePause() // Consume the pause input so it doesn't trigger again
         gameStateRef.current = { ...state, status: 'paused' }
         gameLoopRef.current?.stop()
         syncUiState()
@@ -350,7 +360,7 @@ export function Game() {
       // Sync UI state periodically (every update for smooth display)
       syncUiState()
     },
-    [getInputState, sounds, syncUiState]
+    [consumePause, getInputState, sounds, syncUiState]
   )
 
   /**
@@ -468,6 +478,23 @@ export function Game() {
   const handleMainMenu = useCallback(() => {
     handleQuit()
   }, [handleQuit])
+
+  // Sync canvas element ref when canvas handle is available
+  useEffect(() => {
+    const syncCanvasRef = () => {
+      if (canvasRef.current?.canvas) {
+        canvasElementRef.current = canvasRef.current.canvas
+      }
+    }
+
+    // Initial sync
+    syncCanvasRef()
+
+    // Use a short timeout to ensure the canvas is mounted
+    const timeoutId = setTimeout(syncCanvasRef, 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   // Load assets on mount
   useEffect(() => {

@@ -27,13 +27,18 @@ const PREVENTABLE_KEYS = new Set([
   ' ',
 ])
 
+export interface UseInputResult {
+  input: InputState
+  consumePause: () => void
+}
+
 /**
  * Hook that handles keyboard input for game controls.
  * Detects Arrow Left/Right and A/D for movement, Escape/Space for pause.
  *
- * @returns InputState object with left, right, and pause booleans
+ * @returns Object with input state and consumePause function
  */
-export function useInput(): InputState {
+export function useInput(): UseInputResult {
   const [input, setInput] = useState<InputState>({
     left: false,
     right: false,
@@ -81,10 +86,18 @@ export function useInput(): InputState {
       }))
     }
 
-    // Reset pause toggle flag on key release
+    // Reset pause toggle flag on key release (pause state is reset by consumer)
     if (isPauseKey) {
       pauseToggledRef.current = false
     }
+  }, [])
+
+  /**
+   * Resets the pause state after it has been consumed by the game loop.
+   * Call this after handling the pause action.
+   */
+  const consumePauseAction = useCallback(() => {
+    setInput((prev) => ({ ...prev, pause: false }))
   }, [])
 
   useEffect(() => {
@@ -97,17 +110,5 @@ export function useInput(): InputState {
     }
   }, [handleKeyDown, handleKeyUp])
 
-  return input
-}
-
-/**
- * Resets the pause state after it has been consumed.
- * Call this after handling the pause action to allow the next pause toggle.
- *
- * @param setInput - The setState function for InputState
- */
-export function consumePause(
-  setInput: React.Dispatch<React.SetStateAction<InputState>>
-): void {
-  setInput((prev) => ({ ...prev, pause: false }))
+  return { input, consumePause: consumePauseAction }
 }
