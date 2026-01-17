@@ -1,10 +1,13 @@
 const STORAGE_KEY = 'catch_game_save';
 
+export type ColorScheme = 'default' | 'deuteranopia' | 'protanopia';
+
 export interface GameSettings {
   masterVolume: number;
   musicVolume: number;
   sfxVolume: number;
   reducedMotion: boolean;
+  colorScheme: ColorScheme;
 }
 
 export interface SaveData {
@@ -20,6 +23,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   musicVolume: 1,
   sfxVolume: 1,
   reducedMotion: false,
+  colorScheme: 'default',
 };
 
 const DEFAULT_SAVE_DATA: SaveData = {
@@ -41,6 +45,12 @@ function isLocalStorageAvailable(): boolean {
   }
 }
 
+const VALID_COLOR_SCHEMES: ColorScheme[] = ['default', 'deuteranopia', 'protanopia'];
+
+function isValidColorScheme(value: unknown): value is ColorScheme {
+  return typeof value === 'string' && VALID_COLOR_SCHEMES.includes(value as ColorScheme);
+}
+
 function isValidGameSettings(value: unknown): value is GameSettings {
   if (typeof value !== 'object' || value === null) return false;
   const obj = value as Record<string, unknown>;
@@ -48,7 +58,9 @@ function isValidGameSettings(value: unknown): value is GameSettings {
     typeof obj.masterVolume === 'number' &&
     typeof obj.musicVolume === 'number' &&
     typeof obj.sfxVolume === 'number' &&
-    typeof obj.reducedMotion === 'boolean'
+    typeof obj.reducedMotion === 'boolean' &&
+    // colorScheme is optional for backwards compatibility, defaults to 'default'
+    (obj.colorScheme === undefined || isValidColorScheme(obj.colorScheme))
   );
 }
 
@@ -99,7 +111,13 @@ export function loadGame(): SaveData | null {
 
 export function getOrCreateSaveData(): SaveData {
   const loaded = loadGame();
-  if (loaded) return loaded;
+  if (loaded) {
+    // Ensure backwards compatibility: add colorScheme if missing from old saves
+    if (loaded.settings.colorScheme === undefined) {
+      loaded.settings.colorScheme = DEFAULT_SETTINGS.colorScheme;
+    }
+    return loaded;
+  }
   return { ...DEFAULT_SAVE_DATA, settings: { ...DEFAULT_SETTINGS } };
 }
 
