@@ -1,6 +1,7 @@
 // components/Menu/GameOverScreen.tsx
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { soundManager } from '../../audio/SoundManager'
 
 interface GameOverScreenProps {
   score: number
@@ -23,12 +24,44 @@ export function GameOverScreen({
   onMainMenu,
 }: GameOverScreenProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const hasPLayedSoundsRef = useRef(false)
 
   useEffect(() => {
     // Trigger entrance animation after mount
     const timer = setTimeout(() => setIsVisible(true), 50)
     return () => clearTimeout(timer)
   }, [])
+
+  // Play game over sounds when component mounts
+  useEffect(() => {
+    if (hasPLayedSoundsRef.current) return
+    hasPLayedSoundsRef.current = true
+
+    // Stop any playing music with quick fade
+    soundManager.stopMusic(500)
+
+    // Play game over sound
+    soundManager.play('gameOver')
+
+    // If new high score, play high score sound after a short delay
+    if (isNewHighScore) {
+      const timer = setTimeout(() => {
+        soundManager.play('highScore')
+      }, 600)
+      return () => clearTimeout(timer)
+    }
+  }, [isNewHighScore])
+
+  // Play click sound and trigger action
+  const handlePlayAgain = useCallback(() => {
+    soundManager.play('click')
+    onPlayAgain()
+  }, [onPlayAgain])
+
+  const handleMainMenu = useCallback(() => {
+    soundManager.play('click')
+    onMainMenu()
+  }, [onMainMenu])
 
   return (
     <div
@@ -167,7 +200,7 @@ export function GameOverScreen({
         {/* Play Again Button */}
         <button
           className="game-over-button play-again-button"
-          onClick={onPlayAgain}
+          onClick={handlePlayAgain}
           style={{
             minWidth: '200px',
             minHeight: '56px',
@@ -191,7 +224,7 @@ export function GameOverScreen({
         {/* Main Menu Button */}
         <button
           className="game-over-button main-menu-button"
-          onClick={onMainMenu}
+          onClick={handleMainMenu}
           style={{
             minWidth: '200px',
             minHeight: '56px',

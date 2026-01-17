@@ -1,6 +1,7 @@
 // components/Menu/PauseMenu.tsx
 
 import { useEffect, useCallback } from 'react'
+import { soundManager } from '../../audio/SoundManager'
 
 interface PauseMenuProps {
   onResume: () => void
@@ -18,6 +19,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault()
+        soundManager.play('click')
         onResume()
       }
     },
@@ -28,6 +30,18 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
+
+  // Play click sound and resume
+  const handleResume = useCallback(() => {
+    soundManager.play('click')
+    onResume()
+  }, [onResume])
+
+  // Play click sound and quit
+  const handleQuit = useCallback(() => {
+    soundManager.play('click')
+    onQuit()
+  }, [onQuit])
 
   return (
     <div
@@ -95,7 +109,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
         {/* Resume Button */}
         <button
           className="pause-menu-button resume-button"
-          onClick={onResume}
+          onClick={handleResume}
           style={{
             minWidth: '200px',
             minHeight: '56px',
@@ -120,7 +134,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
         {/* Quit Button */}
         <button
           className="pause-menu-button quit-button"
-          onClick={onQuit}
+          onClick={handleQuit}
           style={{
             minWidth: '200px',
             minHeight: '56px',

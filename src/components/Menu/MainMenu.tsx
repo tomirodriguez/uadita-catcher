@@ -1,6 +1,7 @@
 // components/Menu/MainMenu.tsx
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { soundManager } from '../../audio/SoundManager'
 
 interface MainMenuProps {
   highScore: number
@@ -19,6 +20,17 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
     const timer = setTimeout(() => setIsVisible(true), 50)
     return () => clearTimeout(timer)
   }, [])
+
+  // Start menu music when component mounts
+  useEffect(() => {
+    soundManager.playMusic('menuMusic', 1000)
+  }, [])
+
+  // Play click sound and start game
+  const handleStartGame = useCallback(() => {
+    soundManager.play('click')
+    onStartGame()
+  }, [onStartGame])
 
   return (
     <div
@@ -97,7 +109,7 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
       {/* Start Button */}
       <button
         className="main-menu-button"
-        onClick={onStartGame}
+        onClick={handleStartGame}
         style={{
           minWidth: '200px',
           minHeight: '56px',
