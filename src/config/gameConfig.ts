@@ -33,8 +33,9 @@ export const SCORE_CONFIG = {
     penalty: -5,
     // Specific penalties by sprite index:
     // bad_1 (index 0), bad_2 (index 1): -50 points + lose life
-    // bad_3 (index 2), bad_4 (index 3): lose ALL points + lose life
+    // bad_3 (index 2), bad_4 (index 3): -100 points + lose life
     minorPenalty: 50, // For bad_1 and bad_2
+    majorPenalty: 100, // For bad_3 and bad_4
     losesLife: true, // All bad items now lose a life
   },
 } as const
