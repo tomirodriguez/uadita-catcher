@@ -228,40 +228,10 @@ export function Game() {
       )
 
       // Check for missed good items (objects that left the screen)
+      // Only reset combo, no life penalty for missed items
       for (const obj of objectsNearBottom) {
         if (!obj.active && obj.type === 'good') {
-          // Good item was missed
           sounds.playMiss()
-
-          if (!state.player.isInvulnerable) {
-            sounds.playLoseLife()
-            gameStateRef.current = loseLife(state)
-
-            // Add screen shake for losing life
-            screenShakeRef.current.shake(8)
-
-            // Check for game over
-            if (gameStateRef.current.status === 'gameOver') {
-              gameLoopRef.current?.stop()
-
-              // Record game and check for high score
-              const isNewHighScore = gameStateRef.current.score > gameStateRef.current.highScore
-              if (isNewHighScore) {
-                gameStateRef.current.highScore = gameStateRef.current.score
-              }
-              recordGamePlayed(gameStateRef.current.score)
-
-              setUiState((prev) => ({
-                ...prev,
-                status: 'gameOver',
-                isNewHighScore,
-                highScore: gameStateRef.current.highScore,
-              }))
-              return
-            }
-          }
-
-          // Reset combo on miss
           comboSystemRef.current.miss()
           sounds.resetComboMilestone()
         }

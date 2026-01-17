@@ -14,8 +14,8 @@ export const LIVES_DEFAULTS = {
 } as const
 
 /**
- * Handles losing a life when a good item reaches the ground without being caught.
- * Bad items that reach the ground do NOT cause life loss.
+ * Handles losing a life when a bad item is caught.
+ * Items that reach the ground do NOT cause life loss (only combo reset).
  *
  * When a life is lost:
  * - Decrements the lives counter by 1
