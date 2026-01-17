@@ -16,8 +16,8 @@ export const PLAYER_CONFIG = {
   maxSpeed: 500, // pixels/second
   acceleration: 2000, // pixels/second²
   deceleration: 3000, // friction
-  width: 100,
-  height: 100,
+  width: 150,
+  height: 150,
 } as const
 
 /**

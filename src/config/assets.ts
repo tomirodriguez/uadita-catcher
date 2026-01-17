@@ -7,13 +7,13 @@
  */
 export const PLAYER_ASSET = {
   path: '/images/player.png',
-  width: 100,
-  height: 100,
+  width: 150,
+  height: 150,
   hitbox: {
-    width: 70,
-    height: 70,
-    offsetX: 15, // Centers the hitbox: (100 - 70) / 2
-    offsetY: 15,
+    width: 90,
+    height: 90,
+    offsetX: 30, // Centers the hitbox: (150 - 90) / 2
+    offsetY: 30,
   },
 } as const
 
