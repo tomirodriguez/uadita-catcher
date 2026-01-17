@@ -1,5 +1,139 @@
 // systems/FeedbackSystem.ts
 
+// ============================================================================
+// Screen Shake
+// ============================================================================
+
+/** Maximum shake intensity in pixels */
+const MAX_SHAKE_INTENSITY = 20
+
+/** Exponential decay factor per update (0.9 = 10% reduction per frame) */
+const SHAKE_DECAY = 0.9
+
+/** Intensity threshold below which shake is considered stopped */
+const SHAKE_THRESHOLD = 0.1
+
+/** Shake offset returned by update() */
+export interface ShakeOffset {
+  x: number
+  y: number
+}
+
+/**
+ * Manages screen shake effects for game feel feedback.
+ *
+ * Usage:
+ * ```typescript
+ * const screenShake = new ScreenShake()
+ *
+ * // In game loop update:
+ * const offset = screenShake.update()
+ *
+ * // In render loop (before drawing):
+ * ctx.save()
+ * ctx.translate(offset.x, offset.y)
+ * // ... draw game objects ...
+ * ctx.restore()
+ *
+ * // When player catches an item:
+ * screenShake.shake(3) // Subtle shake for regular catch
+ *
+ * // For combos:
+ * screenShake.shake(8) // Stronger shake for combo milestone
+ * ```
+ */
+export class ScreenShake {
+  private intensity = 0
+  private reducedMotion: boolean
+
+  constructor() {
+    // Check if user prefers reduced motion
+    this.reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }
+
+  /**
+   * Adds shake intensity. Multiple calls accumulate intensity up to the maximum.
+   *
+   * Recommended intensity values:
+   * - Subtle (2-5): Regular catches
+   * - Strong (8-10): Combo milestones, special events
+   *
+   * @param amount - Shake intensity to add (capped at MAX_SHAKE_INTENSITY total)
+   */
+  shake(amount: number): void {
+    // Respect user's reduced motion preference
+    if (this.reducedMotion) {
+      return
+    }
+
+    this.intensity = Math.min(this.intensity + amount, MAX_SHAKE_INTENSITY)
+  }
+
+  /**
+   * Updates shake state and returns current offset.
+   * Should be called once per frame before rendering.
+   *
+   * @returns Offset to apply via ctx.translate() before rendering
+   */
+  update(): ShakeOffset {
+    // No shake effect
+    if (this.intensity < SHAKE_THRESHOLD) {
+      this.intensity = 0
+      return { x: 0, y: 0 }
+    }
+
+    // Calculate random offset based on current intensity
+    const offset: ShakeOffset = {
+      x: (Math.random() - 0.5) * this.intensity,
+      y: (Math.random() - 0.5) * this.intensity,
+    }
+
+    // Apply exponential decay
+    this.intensity *= SHAKE_DECAY
+
+    return offset
+  }
+
+  /**
+   * Returns current shake intensity.
+   * Useful for debugging or conditional logic.
+   */
+  get currentIntensity(): number {
+    return this.intensity
+  }
+
+  /**
+   * Checks if screen is currently shaking.
+   */
+  get isShaking(): boolean {
+    return this.intensity >= SHAKE_THRESHOLD
+  }
+
+  /**
+   * Immediately stops all shake effects.
+   */
+  stop(): void {
+    this.intensity = 0
+  }
+
+  /**
+   * Updates reduced motion preference.
+   * Call this if user changes accessibility settings.
+   */
+  setReducedMotion(enabled: boolean): void {
+    this.reducedMotion = enabled
+    if (enabled) {
+      this.stop()
+    }
+  }
+}
+
+// ============================================================================
+// Floating Text
+// ============================================================================
+
 /**
  * Represents a single floating text element with animation properties.
  */
