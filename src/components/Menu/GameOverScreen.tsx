@@ -129,7 +129,7 @@ export function GameOverScreen({
           animation: 'shake 0.5s ease-in-out',
         }}
       >
-        Game Over
+        Fin del Juego
       </h1>
 
       {/* Final Score */}
@@ -141,7 +141,7 @@ export function GameOverScreen({
           textShadow: '0 4px 20px rgba(255, 255, 255, 0.3)',
           marginBottom: '8px',
         }}
-        aria-label={`Final score: ${score.toLocaleString()}`}
+        aria-label={`Puntaje final: ${score.toLocaleString()}`}
       >
         {score.toLocaleString()}
       </div>
@@ -156,7 +156,7 @@ export function GameOverScreen({
           letterSpacing: '0.1em',
         }}
       >
-        Final Score
+        Puntaje Final
       </div>
 
       {/* New High Score Indicator */}
@@ -172,7 +172,7 @@ export function GameOverScreen({
           role="status"
           aria-live="polite"
         >
-          🏆 New High Score! 🏆
+          🏆 ¡Nuevo Récord! 🏆
         </div>
       )}
 
@@ -185,7 +185,7 @@ export function GameOverScreen({
             marginBottom: '24px',
           }}
         >
-          High Score: {highScore.toLocaleString()}
+          Récord: {highScore.toLocaleString()}
         </div>
       )}
 
@@ -217,9 +217,9 @@ export function GameOverScreen({
             transition: 'background 200ms ease, transform 150ms ease',
             touchAction: 'manipulation',
           }}
-          aria-label="Play again"
+          aria-label="Jugar de nuevo"
         >
-          Play Again
+          Jugar de Nuevo
         </button>
 
         {/* Main Menu Button */}
@@ -241,9 +241,9 @@ export function GameOverScreen({
             transition: 'background 200ms ease, transform 150ms ease',
             touchAction: 'manipulation',
           }}
-          aria-label="Return to main menu"
+          aria-label="Volver al menú principal"
         >
-          Main Menu
+          Menú Principal
         </button>
       </div>
     </div>

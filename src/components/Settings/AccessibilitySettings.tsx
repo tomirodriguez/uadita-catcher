@@ -10,9 +10,9 @@ interface AccessibilitySettingsProps {
 }
 
 const COLOR_SCHEME_OPTIONS: { value: ColorScheme; label: string; description: string }[] = [
-  { value: 'default', label: 'Default', description: 'Standard color palette' },
-  { value: 'deuteranopia', label: 'Deuteranopia', description: 'Red-green color blindness (most common)' },
-  { value: 'protanopia', label: 'Protanopia', description: 'Red-green color blindness (reduced red)' },
+  { value: 'default', label: 'Predeterminado', description: 'Paleta de colores estándar' },
+  { value: 'deuteranopia', label: 'Deuteranopia', description: 'Daltonismo rojo-verde (más común)' },
+  { value: 'protanopia', label: 'Protanopia', description: 'Daltonismo rojo-verde (rojo reducido)' },
 ]
 
 /**
@@ -62,7 +62,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
       role="region"
-      aria-label="Accessibility settings"
+      aria-label="Configuración de accesibilidad"
     >
       <style>
         {`
@@ -102,7 +102,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
             color: '#ffffff',
           }}
         >
-          Accessibility
+          Accesibilidad
         </h2>
         {onClose && (
           <button
@@ -117,9 +117,9 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
               borderRadius: '8px',
               cursor: 'pointer',
             }}
-            aria-label="Close accessibility settings"
+            aria-label="Cerrar configuración de accesibilidad"
           >
-            Close
+            Cerrar
           </button>
         )}
       </div>
@@ -134,7 +134,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
             color: '#ffffff',
           }}
         >
-          Color Scheme
+          Esquema de Colores
         </label>
         <p
           style={{
@@ -144,7 +144,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
             lineHeight: 1.4,
           }}
         >
-          Choose a color palette optimized for different types of color vision
+          Elige una paleta de colores optimizada para diferentes tipos de visión del color
         </p>
         <select
           id="color-scheme-select"
@@ -215,7 +215,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
                 cursor: 'pointer',
               }}
             >
-              Reduce Animations
+              Reducir Animaciones
             </label>
             <p
               style={{
@@ -225,7 +225,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
                 lineHeight: 1.4,
               }}
             >
-              Disables screen shake and simplifies animations
+              Desactiva el temblor de pantalla y simplifica las animaciones
             </p>
           </div>
 
@@ -297,7 +297,7 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
                 backgroundColor: '#60a5fa',
               }}
             />
-            Your system prefers reduced motion
+            Tu sistema prefiere movimiento reducido
           </p>
         )}
       </div>
@@ -311,15 +311,15 @@ export function AccessibilitySettings({ onClose }: AccessibilitySettingsProps) {
             color: 'rgba(255, 255, 255, 0.8)',
           }}
         >
-          Color Preview
+          Vista Previa de Colores
         </span>
         <div style={{ display: 'flex', gap: '16px' }}>
           <ColorPreviewBox
-            label="Good"
+            label="Bueno"
             color={getColorForScheme(colorScheme, 'good')}
           />
           <ColorPreviewBox
-            label="Bad"
+            label="Malo"
             color={getColorForScheme(colorScheme, 'bad')}
           />
         </div>
@@ -352,7 +352,7 @@ function ColorPreviewBox({ label, color }: ColorPreviewBoxProps) {
           borderRadius: '8px',
           border: '2px solid rgba(255, 255, 255, 0.2)',
         }}
-        aria-label={`${label} items color: ${color}`}
+        aria-label={`Color de objetos ${label.toLowerCase()}: ${color}`}
       />
       <span
         style={{

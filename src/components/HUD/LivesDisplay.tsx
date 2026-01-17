@@ -47,7 +47,7 @@ export function LivesDisplay({
             filter: 'drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5))',
           }}
           role="img"
-          aria-label={index < lives ? 'life remaining' : 'life lost'}
+          aria-label={index < lives ? 'vida restante' : 'vida perdida'}
         >
           {index < lives ? '❤️' : '🖤'}
         </span>

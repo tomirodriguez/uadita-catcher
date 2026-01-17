@@ -59,7 +59,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
       }}
       role="dialog"
       aria-modal="true"
-      aria-label="Game paused"
+      aria-label="Juego pausado"
     >
       <style>
         {`
@@ -95,7 +95,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
           letterSpacing: '-0.02em',
         }}
       >
-        Paused
+        Pausado
       </h1>
 
       {/* Buttons Container */}
@@ -125,10 +125,10 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
             transition: 'background 200ms ease, transform 150ms ease',
             touchAction: 'manipulation',
           }}
-          aria-label="Resume game"
+          aria-label="Continuar juego"
           autoFocus
         >
-          Resume
+          Continuar
         </button>
 
         {/* Quit Button */}
@@ -150,9 +150,9 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
             transition: 'background 200ms ease, transform 150ms ease',
             touchAction: 'manipulation',
           }}
-          aria-label="Quit to main menu"
+          aria-label="Salir al menú principal"
         >
-          Quit
+          Salir
         </button>
       </div>
 
@@ -164,7 +164,7 @@ export function PauseMenu({ onResume, onQuit }: PauseMenuProps) {
           color: 'rgba(255, 255, 255, 0.6)',
         }}
       >
-        Press <kbd style={kbdStyle}>Esc</kbd> to resume
+        Presiona <kbd style={kbdStyle}>Esc</kbd> para continuar
       </div>
     </div>
   )

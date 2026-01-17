@@ -88,7 +88,7 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
           animation: 'float 3s ease-in-out infinite',
         }}
       >
-        Catch Game
+        Uadita Catcher
       </h1>
 
       {/* High Score */}
@@ -101,9 +101,9 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
             marginBottom: '32px',
             textShadow: '0 2px 8px rgba(255, 215, 0, 0.4)',
           }}
-          aria-label={`High score: ${highScore.toLocaleString()}`}
+          aria-label={`Récord: ${highScore.toLocaleString()}`}
         >
-          High Score: {highScore.toLocaleString()}
+          Récord: {highScore.toLocaleString()}
         </div>
       )}
 
@@ -127,9 +127,9 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
           marginBottom: '48px',
           touchAction: 'manipulation',
         }}
-        aria-label="Start new game"
+        aria-label="Iniciar nuevo juego"
       >
-        New Game
+        Nuevo Juego
       </button>
 
       {/* Instructions */}
@@ -150,14 +150,14 @@ export function MainMenu({ highScore, onStartGame }: MainMenuProps) {
             fontSize: '18px',
           }}
         >
-          How to Play
+          Cómo Jugar
         </div>
         <div style={{ marginBottom: '8px' }}>
-          Use <kbd style={kbdStyle}>←</kbd> <kbd style={kbdStyle}>→</kbd> arrow keys or touch to move
+          Usa las flechas <kbd style={kbdStyle}>←</kbd> <kbd style={kbdStyle}>→</kbd> o toca la pantalla para moverte
         </div>
         <div>
-          Catch the <span style={{ color: '#4ade80' }}>good items</span> and avoid the{' '}
-          <span style={{ color: '#f87171' }}>bad ones</span>!
+          ¡Atrapa los <span style={{ color: '#4ade80' }}>objetos buenos</span> y evita los{' '}
+          <span style={{ color: '#f87171' }}>malos</span>!
         </div>
       </div>
     </div>

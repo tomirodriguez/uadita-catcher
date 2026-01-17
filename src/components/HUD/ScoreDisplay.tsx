@@ -26,7 +26,7 @@ export function ScoreDisplay({ score }: ScoreDisplayProps) {
         userSelect: 'none',
       }}
     >
-      Score: {score.toLocaleString()}
+      Puntaje: {score.toLocaleString()}
     </div>
   )
 }
