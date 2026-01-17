@@ -21,6 +21,26 @@ export interface TouchInputState {
  *
  * @returns TouchInputState object with left and right booleans
  */
+/**
+ * Checks if an element or any of its ancestors is an interactive element.
+ * Used to allow normal touch behavior on buttons, links, etc.
+ */
+function isInteractiveElement(element: EventTarget | null): boolean {
+  if (!(element instanceof HTMLElement)) return false
+
+  const interactiveTags = ['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA']
+  let current: HTMLElement | null = element
+
+  while (current) {
+    if (interactiveTags.includes(current.tagName)) return true
+    if (current.getAttribute('role') === 'button') return true
+    if (current.onclick !== null) return true
+    current = current.parentElement
+  }
+
+  return false
+}
+
 export function useTouchControls(): TouchInputState {
   const [touchInput, setTouchInput] = useState<TouchInputState>({
     left: false,
@@ -71,6 +91,9 @@ export function useTouchControls(): TouchInputState {
 
   const handleTouchStart = useCallback(
     (event: TouchEvent) => {
+      // Don't interfere with interactive elements (buttons, links, etc.)
+      if (isInteractiveElement(event.target)) return
+
       event.preventDefault()
       updateTouchState(event.touches)
     },
@@ -79,6 +102,8 @@ export function useTouchControls(): TouchInputState {
 
   const handleTouchMove = useCallback(
     (event: TouchEvent) => {
+      if (isInteractiveElement(event.target)) return
+
       event.preventDefault()
       updateTouchState(event.touches)
     },
@@ -87,6 +112,8 @@ export function useTouchControls(): TouchInputState {
 
   const handleTouchEnd = useCallback(
     (event: TouchEvent) => {
+      if (isInteractiveElement(event.target)) return
+
       event.preventDefault()
       // Use remaining touches after this touch ended
       updateTouchState(event.touches)
@@ -96,6 +123,8 @@ export function useTouchControls(): TouchInputState {
 
   const handleTouchCancel = useCallback(
     (event: TouchEvent) => {
+      if (isInteractiveElement(event.target)) return
+
       event.preventDefault()
       // Use remaining touches after this touch was cancelled
       updateTouchState(event.touches)
