@@ -34,7 +34,8 @@ function isInteractiveElement(element: EventTarget | null): boolean {
   while (current) {
     if (interactiveTags.includes(current.tagName)) return true
     if (current.getAttribute('role') === 'button') return true
-    if (current.onclick !== null) return true
+    // Check for data attribute that marks interactive elements
+    if (current.dataset.interactive === 'true') return true
     current = current.parentElement
   }
 
@@ -134,19 +135,20 @@ export function useTouchControls(): TouchInputState {
 
   useEffect(() => {
     // Use { passive: false } to allow preventDefault() and prevent scroll/zoom
-    const options: AddEventListenerOptions = { passive: false }
+    // Also use { capture: true } for iOS Safari compatibility
+    const options: AddEventListenerOptions = { passive: false, capture: true }
 
-    // Attach to window so touches work even outside the canvas (pillarbox areas)
-    window.addEventListener('touchstart', handleTouchStart, options)
-    window.addEventListener('touchmove', handleTouchMove, options)
-    window.addEventListener('touchend', handleTouchEnd, options)
-    window.addEventListener('touchcancel', handleTouchCancel, options)
+    // Attach to document for better iOS Safari compatibility
+    document.addEventListener('touchstart', handleTouchStart, options)
+    document.addEventListener('touchmove', handleTouchMove, options)
+    document.addEventListener('touchend', handleTouchEnd, options)
+    document.addEventListener('touchcancel', handleTouchCancel, options)
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart)
-      window.removeEventListener('touchmove', handleTouchMove)
-      window.removeEventListener('touchend', handleTouchEnd)
-      window.removeEventListener('touchcancel', handleTouchCancel)
+      document.removeEventListener('touchstart', handleTouchStart, options)
+      document.removeEventListener('touchmove', handleTouchMove, options)
+      document.removeEventListener('touchend', handleTouchEnd, options)
+      document.removeEventListener('touchcancel', handleTouchCancel, options)
     }
   }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel])
 
