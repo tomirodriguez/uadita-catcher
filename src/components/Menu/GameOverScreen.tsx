@@ -68,6 +68,7 @@ export function GameOverScreen({
       style={{
         position: 'absolute',
         inset: 0,
+        zIndex: 10,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

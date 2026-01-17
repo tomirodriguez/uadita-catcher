@@ -4,7 +4,7 @@
  * Player asset configuration
  */
 export const PLAYER_ASSET = {
-  path: '/assets/player.png',
+  path: '/images/player.png',
   width: 64,
   height: 64,
 } as const
@@ -13,20 +13,20 @@ export const PLAYER_ASSET = {
  * Good item configurations
  */
 export const GOOD_ITEMS = [
-  { path: '/assets/good_1.png', width: 40, height: 40, points: 10 },
-  { path: '/assets/good_2.png', width: 40, height: 40, points: 10 },
-  { path: '/assets/good_3.png', width: 40, height: 40, points: 10 },
-  { path: '/assets/good_4.png', width: 40, height: 40, points: 10 },
+  { path: '/images/good_1.png', width: 40, height: 40, points: 10 },
+  { path: '/images/good_2.png', width: 40, height: 40, points: 10 },
+  { path: '/images/good_3.png', width: 40, height: 40, points: 10 },
+  { path: '/images/good_4.png', width: 40, height: 40, points: 10 },
 ] as const
 
 /**
  * Bad item configurations
  */
 export const BAD_ITEMS = [
-  { path: '/assets/bad_1.png', width: 40, height: 40, points: -5 },
-  { path: '/assets/bad_2.png', width: 40, height: 40, points: -5 },
-  { path: '/assets/bad_3.png', width: 40, height: 40, points: -5 },
-  { path: '/assets/bad_4.png', width: 40, height: 40, points: -5 },
+  { path: '/images/bad_1.png', width: 40, height: 40, points: -5 },
+  { path: '/images/bad_2.png', width: 40, height: 40, points: -5 },
+  { path: '/images/bad_3.png', width: 40, height: 40, points: -5 },
+  { path: '/images/bad_4.png', width: 40, height: 40, points: -5 },
 ] as const
 
 /**
