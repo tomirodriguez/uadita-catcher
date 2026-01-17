@@ -87,7 +87,7 @@ export const SPAWN_CONFIG = {
  */
 export const LIVES_CONFIG = {
   initial: 3,
-  max: 5,
+  max: 3, // Same as initial since lives cannot be gained
   invulnerabilityDuration: 1500, // ms after losing life
   flashInterval: 100, // ms for flash effect
 } as const
@@ -96,7 +96,7 @@ export const LIVES_CONFIG = {
  * Debug configuration - only active in development
  */
 export const DEBUG_CONFIG = {
-  showHitboxes: false, // Toggle to true to visualize hitboxes
+  showHitboxes: true, // Toggle to true to visualize hitboxes
   hitboxColor: 'rgba(255, 0, 0, 0.5)', // Red semi-transparent
   catchZoneColor: 'rgba(0, 255, 0, 0.3)', // Green semi-transparent
 } as const

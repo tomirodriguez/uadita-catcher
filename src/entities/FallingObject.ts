@@ -3,6 +3,7 @@
 import type { FallingObject, Poolable, Velocity, Hitbox } from '../types/game'
 import { ObjectPool } from '../core/ObjectPool'
 import { GOOD_ITEMS, BAD_ITEMS } from '../config/assets'
+import { DEBUG_CONFIG } from '../config/gameConfig'
 
 /**
  * Default dimensions for falling objects
@@ -271,6 +272,18 @@ export function renderFallingObject(
     ctx.strokeStyle = obj.type === 'good' ? '#16a34a' : '#dc2626'
     ctx.lineWidth = 2
     ctx.strokeRect(renderX, renderY, obj.width, obj.height)
+  }
+
+  // Debug: draw hitbox
+  if (DEBUG_CONFIG.showHitboxes && !import.meta.env.PROD) {
+    ctx.strokeStyle = DEBUG_CONFIG.hitboxColor
+    ctx.lineWidth = 2
+    ctx.strokeRect(
+      renderX + obj.hitbox.offsetX,
+      renderY + obj.hitbox.offsetY,
+      obj.hitbox.width,
+      obj.hitbox.height
+    )
   }
 
   ctx.restore()
