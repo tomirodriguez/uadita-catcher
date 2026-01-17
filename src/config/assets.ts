@@ -9,7 +9,8 @@ export const BACKGROUND_IMAGES = [
 	"/images/background_2.webp", // Levels 4-6
 	"/images/background_3.webp", // Levels 7-9
 	"/images/background_4.jpg", // Levels 10-12
-	"/images/background_5.avif", // Levels 13+
+	"/images/background_5.jpg", // Levels 13-15
+	"/images/background_6.avif", // Levels 16+
 ] as const;
 
 /**
