@@ -57,8 +57,8 @@ export const COMBO_CONFIG = {
  */
 export const DIFFICULTY_CONFIG = {
   initial: {
-    spawnInterval: 1400, // ms between spawns
-    fallSpeed: 200, // pixels/second
+    spawnInterval: 1100, // ms between spawns (faster start)
+    fallSpeed: 280, // pixels/second (faster start)
     badItemRatio: 0.4, // 40% bad items - starts challenging
   },
   max: {
@@ -66,7 +66,7 @@ export const DIFFICULTY_CONFIG = {
     fallSpeed: 550,
     badItemRatio: 0.55, // 55% bad items at max
   },
-  scorePerLevel: 200, // Score to level up (faster progression)
+  scorePerLevel: 120, // Score to level up (rapid progression)
   maxLevel: 20,
 } as const
 
@@ -77,7 +77,7 @@ export const SPAWN_CONFIG = {
   maxItemsOnScreen: 8,
   lanes: 5, // Divide screen into lanes (reduced for larger items)
   guaranteedGoodEvery: 7, // Guarantee 1 good every N spawns (allows more bad items)
-  gracePeriodStart: 1200, // ms without bad items at start (shorter grace)
+  gracePeriodStart: 800, // ms without bad items at start (quick challenge)
   minHorizontalGap: 80, // pixels between items
   recentLaneMemory: 2, // Avoid repeating lanes
 } as const
