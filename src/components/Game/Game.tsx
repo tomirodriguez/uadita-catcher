@@ -325,10 +325,25 @@ export function Game() {
             ? SCORE_CONFIG.badItem.majorPenalty // Lose 100 points
             : SCORE_CONFIG.badItem.minorPenalty // Lose 50 points
 
+          // Track previous level before updating
+          const previousLevel = gameStateRef.current.difficulty.level
+
           gameStateRef.current.score = Math.max(0, gameStateRef.current.score - penalty)
 
           // Update difficulty based on new score (level can go down)
           gameStateRef.current.difficulty = calculateDifficulty(gameStateRef.current.score)
+
+          // Check for level down
+          const newLevel = gameStateRef.current.difficulty.level
+          if (newLevel < previousLevel) {
+            // Show level down message in center of screen
+            floatingTextRef.current.spawnLevelDown(
+              newLevel,
+              CANVAS_CONFIG.BASE_WIDTH / 2,
+              CANVAS_CONFIG.BASE_HEIGHT / 2
+            )
+            screenShakeRef.current.shake(8)
+          }
 
           // Play bad catch sound
           sounds.playBadCatch()
@@ -582,7 +597,7 @@ export function Game() {
       {/* HUD - only shown during gameplay */}
       {(uiState.status === 'playing' || uiState.status === 'paused') && (
         <>
-          <ScoreDisplay score={uiState.score} />
+          <ScoreDisplay score={uiState.score} level={uiState.difficulty.level} />
           <LivesDisplay
             lives={uiState.lives}
             maxLives={uiState.maxLives}

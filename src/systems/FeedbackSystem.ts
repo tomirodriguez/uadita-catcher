@@ -188,6 +188,7 @@ export const FEEDBACK_COLORS = {
   perfect: '#60a5fa', // Blue for perfect catches
   save: '#a855f7', // Purple for save catches
   levelUp: '#f97316', // Orange for level up
+  levelDown: '#ef4444', // Red for level down
 } as const
 
 /**
@@ -285,6 +286,17 @@ export class FloatingTextManager {
    */
   spawnLevelUp(level: number, x: number, y: number): void {
     this.spawn(`¡NIVEL ${level}!`, x, y, FEEDBACK_COLORS.levelUp)
+  }
+
+  /**
+   * Spawns floating text for a level down.
+   *
+   * @param level - New level dropped to
+   * @param x - X position
+   * @param y - Y position
+   */
+  spawnLevelDown(level: number, x: number, y: number): void {
+    this.spawn(`¡NIVEL ${level}!`, x, y, FEEDBACK_COLORS.levelDown)
   }
 
   /**
