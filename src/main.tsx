@@ -1,21 +1,23 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { soundManager } from './audio/SoundManager'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { Analytics } from "@vercel/analytics/react";
+import App from "./App.tsx";
+import { soundManager } from "./audio/SoundManager";
 
 // Preload all sounds early to prevent audio delays during gameplay
 soundManager.preload().catch((error) => {
-  console.warn('Failed to preload sounds:', error)
-})
+	console.warn("Failed to preload sounds:", error);
+});
 
-const rootElement = document.getElementById('root')
+const rootElement = document.getElementById("root");
 if (!rootElement) {
-  throw new Error('Root element not found')
+	throw new Error("Root element not found");
 }
 
 createRoot(rootElement).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+	<StrictMode>
+		<App />
+		<Analytics />
+	</StrictMode>,
+);
