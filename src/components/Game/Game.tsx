@@ -40,6 +40,7 @@ import { useSoundEffects, usePreloadSounds } from '../../hooks/useSoundEffects'
 
 // Config & Utils
 import { CANVAS_CONFIG, SCORE_CONFIG } from '../../config/gameConfig'
+import { BACKGROUND_IMAGES } from '../../config/assets'
 import { getHighScore, recordGamePlayed } from '../../utils/storage'
 
 /**
@@ -88,7 +89,7 @@ export function Game() {
   const comboSystemRef = useRef<ComboSystem>(new ComboSystem())
   const screenShakeRef = useRef<ScreenShake>(new ScreenShake())
   const floatingTextRef = useRef<FloatingTextManager>(new FloatingTextManager())
-  const backgroundImageRef = useRef<HTMLImageElement | null>(null)
+  const backgroundImagesRef = useRef<HTMLImageElement[]>([])
 
   // UI state that triggers re-renders
   const [uiState, setUiState] = useState({
@@ -427,10 +428,15 @@ export function Game() {
     const state = gameStateRef.current
     if (state.status !== 'playing' && state.status !== 'paused') return
 
+    // Select background based on level (changes every 3 levels)
+    const level = state.difficulty.level
+    const backgroundIndex = Math.min(Math.floor((level - 1) / 3), backgroundImagesRef.current.length - 1)
+    const backgroundImage = backgroundImagesRef.current[backgroundIndex]
+
     // Draw background image (or fallback color)
-    if (backgroundImageRef.current) {
+    if (backgroundImage) {
       ctx.drawImage(
-        backgroundImageRef.current,
+        backgroundImage,
         0,
         0,
         CANVAS_CONFIG.BASE_WIDTH,
@@ -547,16 +553,27 @@ export function Game() {
 
   // Load assets on mount
   useEffect(() => {
-    // Load background image
-    const bgImg = new Image()
-    bgImg.src = '/images/background.avif'
-    bgImg.onload = () => {
-      backgroundImageRef.current = bgImg
-    }
-
-    Promise.all([loadPlayerImage(), loadFallingObjectImages()]).catch((error) => {
-      console.warn('Failed to load some game assets:', error)
+    // Load all background images
+    const loadBackgrounds = BACKGROUND_IMAGES.map((src, index) => {
+      return new Promise<void>((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          backgroundImagesRef.current[index] = img
+          resolve()
+        }
+        img.onerror = () => {
+          // Image failed to load, slot will remain empty
+          resolve()
+        }
+        img.src = src
+      })
     })
+
+    Promise.all([...loadBackgrounds, loadPlayerImage(), loadFallingObjectImages()]).catch(
+      (error) => {
+        console.warn('Failed to load some game assets:', error)
+      }
+    )
 
     // Cleanup on unmount
     return () => {
