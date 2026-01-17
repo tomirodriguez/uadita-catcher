@@ -187,6 +187,7 @@ export const FEEDBACK_COLORS = {
   combo: '#ffd700', // Gold for combo milestones
   perfect: '#60a5fa', // Blue for perfect catches
   save: '#a855f7', // Purple for save catches
+  levelUp: '#f97316', // Orange for level up
 } as const
 
 /**
@@ -273,6 +274,17 @@ export class FloatingTextManager {
    */
   spawnPerfectCatch(points: number, x: number, y: number): void {
     this.spawn(`+${points}`, x, y, FEEDBACK_COLORS.perfect)
+  }
+
+  /**
+   * Spawns floating text for a level up.
+   *
+   * @param level - New level reached
+   * @param x - X position
+   * @param y - Y position
+   */
+  spawnLevelUp(level: number, x: number, y: number): void {
+    this.spawn(`¡NIVEL ${level}!`, x, y, FEEDBACK_COLORS.levelUp)
   }
 
   /**

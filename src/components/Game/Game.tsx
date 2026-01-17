@@ -303,8 +303,23 @@ export function Game() {
           const points = comboSystemRef.current.hit(isPerfect, isSave)
           gameStateRef.current.score += points
 
+          // Track previous level before updating difficulty
+          const previousLevel = gameStateRef.current.difficulty.level
+
           // Update difficulty based on new score
           gameStateRef.current.difficulty = calculateDifficulty(gameStateRef.current.score)
+
+          // Check for level up
+          const newLevel = gameStateRef.current.difficulty.level
+          if (newLevel > previousLevel) {
+            // Show level up message in center of screen
+            floatingTextRef.current.spawnLevelUp(
+              newLevel,
+              CANVAS_CONFIG.BASE_WIDTH / 2,
+              CANVAS_CONFIG.BASE_HEIGHT / 2
+            )
+            screenShakeRef.current.shake(6)
+          }
 
           // Play sounds
           sounds.playCatch()

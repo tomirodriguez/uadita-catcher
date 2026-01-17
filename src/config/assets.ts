@@ -2,31 +2,43 @@
 
 /**
  * Player asset configuration
+ * - width/height: Visual render size
+ * - hitbox: Collision detection area (smaller than visual for better feel)
  */
 export const PLAYER_ASSET = {
   path: '/images/player.png',
   width: 100,
   height: 100,
+  hitbox: {
+    width: 70,
+    height: 70,
+    offsetX: 15, // Centers the hitbox: (100 - 70) / 2
+    offsetY: 15,
+  },
 } as const
 
 /**
  * Good item configurations
+ * - width/height: Visual render size
+ * - hitbox: Collision detection area
  */
 export const GOOD_ITEMS = [
-  { path: '/images/good_1.png', width: 64, height: 64, points: 10 },
-  { path: '/images/good_2.png', width: 64, height: 64, points: 10 },
-  { path: '/images/good_3.png', width: 64, height: 64, points: 10 },
-  { path: '/images/good_4.png', width: 64, height: 64, points: 10 },
+  { path: '/images/good_1.png', width: 64, height: 64, points: 10, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/good_2.png', width: 64, height: 64, points: 10, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/good_3.png', width: 64, height: 64, points: 10, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/good_4.png', width: 64, height: 64, points: 10, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
 ] as const
 
 /**
  * Bad item configurations
+ * - width/height: Visual render size
+ * - hitbox: Collision detection area
  */
 export const BAD_ITEMS = [
-  { path: '/images/bad_1.png', width: 64, height: 64, points: -5 },
-  { path: '/images/bad_2.png', width: 64, height: 64, points: -5 },
-  { path: '/images/bad_3.png', width: 64, height: 64, points: -5 },
-  { path: '/images/bad_4.png', width: 64, height: 64, points: -5 },
+  { path: '/images/bad_1.png', width: 64, height: 64, points: -5, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/bad_2.png', width: 64, height: 64, points: -5, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/bad_3.png', width: 64, height: 64, points: -5, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
+  { path: '/images/bad_4.png', width: 64, height: 64, points: -5, hitbox: { width: 44, height: 44, offsetX: 10, offsetY: 10 } },
 ] as const
 
 /**
