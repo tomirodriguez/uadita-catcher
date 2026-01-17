@@ -285,8 +285,8 @@ export function Game() {
         currentActiveObjects.push(obj)
       })
 
-      // Check collisions
-      const collisions = checkCollisions(state.player, currentActiveObjects)
+      // Check collisions (with neutral zone at bottom)
+      const collisions = checkCollisions(state.player, currentActiveObjects, CANVAS_CONFIG.BASE_HEIGHT)
 
       for (const collision of collisions) {
         const obj = collision.object as FallingObjectEntity

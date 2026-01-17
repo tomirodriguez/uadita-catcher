@@ -15,6 +15,13 @@ const CATCH_ZONE_PADDING = 10
 const PERFECT_ZONE_SIZE = 0.5
 
 /**
+ * Height of the neutral zone at the bottom of the screen (pixels).
+ * Items in this zone cannot be caught - they're considered "already fallen".
+ * This prevents frustrating catches when items are barely touched at the bottom.
+ */
+const NEUTRAL_ZONE_HEIGHT = 50
+
+/**
  * Collision type indicating how the object was caught.
  */
 export type CollisionType = 'normal' | 'perfect'
@@ -114,21 +121,31 @@ export function getPerfectZone(player: Player): AABB {
 /**
  * Checks all falling objects for collisions with the player.
  * Returns an array of detected collisions with their type (normal/perfect).
+ * Objects in the neutral zone at the bottom are ignored to prevent
+ * frustrating accidental catches.
  *
  * @param player - The player entity
  * @param objects - Array of falling objects to check
+ * @param canvasHeight - Height of the game canvas (optional, enables neutral zone)
  * @returns Array of detected collisions
  */
 export function checkCollisions(
   player: Player,
-  objects: FallingObject[]
+  objects: FallingObject[],
+  canvasHeight?: number
 ): DetectedCollision[] {
   const collisions: DetectedCollision[] = []
   const catchZone = getCatchZone(player)
   const perfectZone = getPerfectZone(player)
 
+  // Calculate neutral zone threshold (bottom of screen)
+  const neutralZoneStart = canvasHeight ? canvasHeight - NEUTRAL_ZONE_HEIGHT : Infinity
+
   for (const obj of objects) {
     if (!obj.active) continue
+
+    // Skip objects in the neutral zone (too far down to catch)
+    if (obj.y + obj.height > neutralZoneStart) continue
 
     // Create AABB for the falling object
     const objectBox: AABB = {
