@@ -75,11 +75,13 @@ export function ComboIndicator({
       >
         <div
           style={{
-            width: `${timerPercent * 100}%`,
+            width: '100%',
             height: '100%',
             backgroundColor: color,
             borderRadius: '3px',
-            transition: 'width 50ms linear',
+            transformOrigin: 'left center',
+            transform: `scaleX(${timerPercent})`,
+            willChange: 'transform',
           }}
         />
       </div>
