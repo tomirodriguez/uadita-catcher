@@ -59,15 +59,15 @@ export const DIFFICULTY_CONFIG = {
   initial: {
     spawnInterval: 1100, // ms between spawns (faster start)
     fallSpeed: 280, // pixels/second (faster start)
-    badItemRatio: 0.4, // 40% bad items - starts challenging
+    badItemRatio: 0.35, // 35% bad items - easier start
   },
   max: {
-    spawnInterval: 350,
-    fallSpeed: 550,
-    badItemRatio: 0.55, // 55% bad items at max
+    spawnInterval: 250, // Much faster spawning
+    fallSpeed: 700, // Much faster falling (2.5x initial)
+    badItemRatio: 0.65, // 65% bad items at max
   },
-  scorePerLevel: 120, // Score to level up (rapid progression)
-  maxLevel: 20,
+  scorePerLevel: 80, // Score to level up (faster progression)
+  maxLevel: 25, // More levels for gradual increase
 } as const
 
 /**

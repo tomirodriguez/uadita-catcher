@@ -10,12 +10,13 @@ function lerp(min: number, max: number, t: number): number {
 
 /**
  * Applies a curve that makes difficulty progression more noticeable.
- * Starts slightly accelerated then becomes more linear for consistent feel.
+ * Uses an aggressive curve that ramps up quickly in early-mid game.
  */
 function difficultyEasing(t: number): number {
-  // Blend of linear and quadratic for noticeable but fair progression
-  // At t=0.5 this gives ~0.375, making mid-game noticeably harder
-  return t * (0.5 + 0.5 * t)
+  // More aggressive curve: sqrt for early acceleration
+  // At t=0.25 this gives ~0.5, at t=0.5 gives ~0.71
+  // This makes difficulty ramp up noticeably faster
+  return Math.sqrt(t)
 }
 
 /**

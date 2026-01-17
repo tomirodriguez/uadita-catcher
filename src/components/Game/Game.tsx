@@ -28,6 +28,7 @@ import { GameCanvas, type GameCanvasHandle } from './GameCanvas'
 import { ScoreDisplay } from '../HUD/ScoreDisplay'
 import { LivesDisplay } from '../HUD/LivesDisplay'
 import { ComboIndicator } from '../HUD/ComboIndicator'
+import { DebugPanel } from '../HUD/DebugPanel'
 import { MainMenu } from '../Menu/MainMenu'
 import { PauseMenu } from '../Menu/PauseMenu'
 import { GameOverScreen } from '../Menu/GameOverScreen'
@@ -100,6 +101,8 @@ export function Game() {
     timerPercent: 0,
     highScore: getHighScore(),
     isNewHighScore: false,
+    difficulty: createInitialDifficultyState(),
+    elapsedTime: 0,
   })
 
   // Input handling
@@ -145,6 +148,8 @@ export function Game() {
       multiplier: combo.multiplier,
       timerPercent: combo.timerPercent,
       highScore: state.highScore,
+      difficulty: state.difficulty,
+      elapsedTime: state.elapsedTime,
     }))
   }, [])
 
@@ -561,6 +566,11 @@ export function Game() {
             comboCount={uiState.comboCount}
             multiplier={uiState.multiplier}
             timerPercent={uiState.timerPercent}
+          />
+          <DebugPanel
+            difficulty={uiState.difficulty}
+            score={uiState.score}
+            elapsedTime={uiState.elapsedTime}
           />
         </>
       )}
