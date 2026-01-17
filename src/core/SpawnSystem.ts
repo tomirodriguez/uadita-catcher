@@ -61,12 +61,14 @@ export class SpawnSystem {
 
   /**
    * Resets the spawn system state for a new game.
+   * Releases all active objects back to the pool.
    */
   reset(): void {
     this.recentLanes = []
     this.spawnsSinceGood = 0
     this.elapsedTime = 0
     this.spawnAccumulator = 0
+    this.pool.releaseAll()
   }
 
   /**

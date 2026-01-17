@@ -87,4 +87,17 @@ export class ObjectPool<T extends Poolable> {
   getPoolSize(): number {
     return this.pool.length
   }
+
+  /**
+   * Release all active objects back to the pool.
+   * Useful for resetting game state.
+   */
+  releaseAll(): void {
+    for (const obj of this.pool) {
+      if (obj.active) {
+        obj.active = false
+        obj.reset()
+      }
+    }
+  }
 }

@@ -37,7 +37,7 @@ export function ComboIndicator({
     <div
       style={{
         position: 'absolute',
-        top: 'calc(max(16px, env(safe-area-inset-top)) + 36px)',
+        top: 'calc(max(16px, env(safe-area-inset-top)) + 62px)',
         left: 'max(16px, env(safe-area-inset-left))',
         zIndex: 100,
         pointerEvents: 'none',
