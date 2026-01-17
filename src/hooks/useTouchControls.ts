@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type RefObject } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 /**
  * Touch input state for movement controls.
@@ -16,12 +16,12 @@ export interface TouchInputState {
  * Touch on the left half of the screen activates left movement.
  * Touch on the right half of the screen activates right movement.
  *
- * @param canvasRef - Reference to the canvas element for event binding
+ * Events are attached to the window to ensure touches work even on
+ * areas outside the canvas (e.g., pillarbox bars on wider screens).
+ *
  * @returns TouchInputState object with left and right booleans
  */
-export function useTouchControls(
-  canvasRef: RefObject<HTMLCanvasElement | null>
-): TouchInputState {
+export function useTouchControls(): TouchInputState {
   const [touchInput, setTouchInput] = useState<TouchInputState>({
     left: false,
     right: false,
@@ -104,30 +104,22 @@ export function useTouchControls(
   )
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
     // Use { passive: false } to allow preventDefault() and prevent scroll/zoom
     const options: AddEventListenerOptions = { passive: false }
 
-    canvas.addEventListener('touchstart', handleTouchStart, options)
-    canvas.addEventListener('touchmove', handleTouchMove, options)
-    canvas.addEventListener('touchend', handleTouchEnd, options)
-    canvas.addEventListener('touchcancel', handleTouchCancel, options)
+    // Attach to window so touches work even outside the canvas (pillarbox areas)
+    window.addEventListener('touchstart', handleTouchStart, options)
+    window.addEventListener('touchmove', handleTouchMove, options)
+    window.addEventListener('touchend', handleTouchEnd, options)
+    window.addEventListener('touchcancel', handleTouchCancel, options)
 
     return () => {
-      canvas.removeEventListener('touchstart', handleTouchStart)
-      canvas.removeEventListener('touchmove', handleTouchMove)
-      canvas.removeEventListener('touchend', handleTouchEnd)
-      canvas.removeEventListener('touchcancel', handleTouchCancel)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleTouchEnd)
+      window.removeEventListener('touchcancel', handleTouchCancel)
     }
-  }, [
-    canvasRef,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    handleTouchCancel,
-  ])
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel])
 
   return touchInput
 }
