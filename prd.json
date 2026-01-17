@@ -1,0 +1,928 @@
+{
+  "name": "Catch Game",
+  "description": "Juego arcade web tipo Catch Game donde el jugador controla una canasta para atrapar objetos buenos mientras evita los malos. React 19 + TypeScript 5 + Vite 6 + HTML5 Canvas + Howler.js. Fixed timestep game loop con interpolación, object pooling, AABB collision, combo system.",
+  "branchName": "feature/catch-game",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Setup proyecto con Vite + React + TypeScript",
+      "description": "Inicializar proyecto con Vite usando template react-ts. Configurar estructura de carpetas según arquitectura definida en PRD.md. Instalar dependencias base: howler, @types/howler.",
+      "acceptanceCriteria": [
+        "Proyecto creado con: bun create vite . --template react-ts",
+        "Estructura de carpetas: src/components/, src/core/, src/entities/, src/systems/, src/hooks/, src/audio/, src/config/, src/types/, src/utils/, src/assets/",
+        "Dependencias instaladas: howler, @types/howler",
+        "TailwindCSS configurado",
+        "bun run dev inicia servidor de desarrollo sin errores",
+        "bun run build compila sin errores"
+      ],
+      "priority": 1,
+      "passes": true,
+      "labels": [
+        "setup",
+        "fase-1"
+      ],
+      "dependsOn": [],
+      "notes": "Ver PRD.md sección 1.2 para estructura exacta de carpetas",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-002",
+      "title": "Definir interfaces TypeScript completas",
+      "description": "Crear archivo src/types/game.ts con todas las interfaces del juego: Position, Velocity, Dimensions, AABB, Poolable, GameObject, Player, FallingObject, ComboState, DifficultyState, GameState, InputState.",
+      "acceptanceCriteria": [
+        "Archivo src/types/game.ts creado",
+        "Interface Position con x, y (number)",
+        "Interface Velocity con vx, vy (number)",
+        "Interface Dimensions con width, height (number)",
+        "Interface AABB extends Position, Dimensions",
+        "Interface Poolable con active: boolean y reset(): void",
+        "Interface GameObject extends Position, Dimensions con id, velocity",
+        "Interface Player extends GameObject con speed, isInvulnerable, invulnerabilityTimer",
+        "Interface FallingObject extends GameObject, Poolable con type, points, spriteIndex, isSaveable",
+        "Type GameStatus = 'menu' | 'playing' | 'paused' | 'gameOver'",
+        "Interface ComboState con count, multiplier, timer, maxTimer",
+        "Interface DifficultyState con level, spawnInterval, fallSpeed, badItemRatio",
+        "Interface GameState con status, score, lives, maxLives, player, fallingObjects, combo, difficulty, elapsedTime, highScore",
+        "Interface InputState con left, right, pause (boolean)",
+        "bun run build compila sin errores de tipos"
+      ],
+      "priority": 2,
+      "passes": true,
+      "labels": [
+        "types",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-001"
+      ],
+      "notes": "Ver PRD.md sección 2 para definiciones exactas",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-003",
+      "title": "Crear archivo de configuración del juego",
+      "description": "Crear src/config/gameConfig.ts con todas las constantes configurables: dimensiones base, velocidades, puntuación, combos, dificultad, spawn, vidas.",
+      "acceptanceCriteria": [
+        "Archivo src/config/gameConfig.ts creado",
+        "CANVAS_CONFIG con BASE_WIDTH=400, BASE_HEIGHT=711, ASPECT_RATIO=9/16",
+        "PLAYER_CONFIG con maxSpeed=500, acceleration=2000, deceleration=3000, width=64, height=64",
+        "SCORE_CONFIG con goodItem.base=10, goodItem.perfectBonus=1.5, goodItem.saveBonus=2.0, badItem.penalty=-5",
+        "COMBO_CONFIG con window=2000ms, thresholds=[{count:5,mult:1.5},{count:10,mult:2},{count:20,mult:3},{count:50,mult:5}]",
+        "DIFFICULTY_CONFIG con initial (spawnInterval:1500, fallSpeed:150, badItemRatio:0.2) y max values",
+        "SPAWN_CONFIG con maxItemsOnScreen=8, lanes=6, guaranteedGoodEvery=4, gracePeriodStart=3000",
+        "LIVES_CONFIG con initial=3, max=5, invulnerabilityDuration=1500ms",
+        "Todas las constantes exportadas y tipadas"
+      ],
+      "priority": 3,
+      "passes": true,
+      "labels": [
+        "config",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md secciones 5-9 para valores exactos",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-004",
+      "title": "Crear configuración de assets",
+      "description": "Crear src/config/assets.ts con paths y configuración de todas las imágenes y sonidos del juego.",
+      "acceptanceCriteria": [
+        "Archivo src/config/assets.ts creado",
+        "PLAYER_ASSET con path: '/assets/player.png', width: 64, height: 64",
+        "GOOD_ITEMS array con 4 items: good_1.png a good_4.png, cada uno con width:40, height:40, points:10",
+        "BAD_ITEMS array con 4 items: bad_1.png a bad_4.png, cada uno con width:40, height:40, points:-5",
+        "SOUNDS config con todos los sonidos definidos en PRD.md sección 10.1",
+        "Cada sonido con src array [webm, mp3], volume, pool size donde aplique"
+      ],
+      "priority": 4,
+      "passes": true,
+      "labels": [
+        "config",
+        "assets",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-001"
+      ],
+      "notes": "Los assets de imagen están en src/assets/: player.png, good_1-4.png, bad_1-4.png",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-005",
+      "title": "Implementar Object Pool genérico",
+      "description": "Crear src/core/ObjectPool.ts con clase genérica ObjectPool<T extends Poolable> para reutilizar objetos y evitar garbage collection.",
+      "acceptanceCriteria": [
+        "Archivo src/core/ObjectPool.ts creado",
+        "Clase genérica ObjectPool<T extends Poolable>",
+        "Constructor acepta factory function y initialSize (default 50)",
+        "Pre-allocate objetos en constructor",
+        "Método acquire() retorna objeto inactivo o expande pool (max 200)",
+        "Método release(obj) marca objeto como inactivo y llama reset()",
+        "Método forEachActive(callback) para iterar sin crear arrays",
+        "Método getActiveCount() retorna cantidad de objetos activos",
+        "Tests básicos para verificar pooling funciona"
+      ],
+      "priority": 5,
+      "passes": true,
+      "labels": [
+        "core",
+        "performance",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md sección 1.4 para implementación de referencia",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-006",
+      "title": "Implementar Game Loop con fixed timestep",
+      "description": "Crear src/core/GameLoop.ts con game loop usando requestAnimationFrame, fixed timestep de 60 updates/segundo, e interpolación para render suave.",
+      "acceptanceCriteria": [
+        "Archivo src/core/GameLoop.ts creado",
+        "Constante TIMESTEP = 1000/60 (~16.67ms)",
+        "Constante MAX_FRAME_TIME = 250ms (previene spiral of death)",
+        "Acumulador para fixed timestep updates",
+        "Loop ejecuta update() múltiples veces si es necesario para catchup",
+        "Calcula alpha (0-1) para interpolación",
+        "Método start() inicia el loop",
+        "Método stop() detiene el loop con cancelAnimationFrame",
+        "Callbacks configurables para update(dt) y render(alpha)",
+        "Maneja document.visibilitychange para pausar cuando tab no está visible"
+      ],
+      "priority": 6,
+      "passes": true,
+      "labels": [
+        "core",
+        "gameloop",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md sección 1.3 para implementación exacta del fixed timestep",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-007",
+      "title": "Crear componente Canvas con scaling responsive",
+      "description": "Crear src/components/Game/GameCanvas.tsx que renderiza un canvas HTML5, mantiene aspect ratio 9:16, se escala al viewport, y está centrado.",
+      "acceptanceCriteria": [
+        "Componente src/components/Game/GameCanvas.tsx creado",
+        "Canvas con resolución interna BASE_WIDTH x BASE_HEIGHT (400x711)",
+        "Función resizeCanvas mantiene aspect ratio 9:16",
+        "Canvas centrado con pillarboxing (pantallas anchas) o letterboxing (pantallas altas)",
+        "useEffect escucha window resize y llama resizeCanvas",
+        "Canvas visible y escalado correctamente en diferentes tamaños de ventana",
+        "Contexto 2D obtenido con { alpha: false } para mejor performance",
+        "Ref del canvas expuesto para uso externo"
+      ],
+      "priority": 7,
+      "passes": true,
+      "labels": [
+        "components",
+        "canvas",
+        "responsive",
+        "fase-1"
+      ],
+      "dependsOn": [
+        "US-003"
+      ],
+      "notes": "Ver PRD.md sección 12.1 para lógica de scaling",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-008",
+      "title": "Implementar hook useInput para teclado",
+      "description": "Crear src/hooks/useInput.ts que detecta teclas Arrow Left/Right, A/D para movimiento y Escape/Space para pausa.",
+      "acceptanceCriteria": [
+        "Archivo src/hooks/useInput.ts creado",
+        "Hook retorna InputState { left, right, pause }",
+        "Arrow Left y tecla 'a'/'A' activan left",
+        "Arrow Right y tecla 'd'/'D' activan right",
+        "Escape y Space activan pause (toggle)",
+        "Estado actualiza en keydown y keyup",
+        "Cleanup de event listeners en useEffect return",
+        "Previene default en teclas relevantes para evitar scroll"
+      ],
+      "priority": 8,
+      "passes": true,
+      "labels": [
+        "hooks",
+        "input",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md sección 4.1",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-009",
+      "title": "Implementar touch controls para móvil",
+      "description": "Crear src/hooks/useTouchControls.ts con zonas táctiles divididas (mitad izquierda/derecha de pantalla).",
+      "acceptanceCriteria": [
+        "Archivo src/hooks/useTouchControls.ts creado",
+        "Touch en mitad izquierda de pantalla activa left",
+        "Touch en mitad derecha de pantalla activa right",
+        "Movimiento continuo mientras se mantiene el touch",
+        "Maneja touchstart, touchmove, touchend, touchcancel",
+        "Event listeners con { passive: false } para prevenir scroll",
+        "Cleanup correcto de event listeners",
+        "CSS touch-action: none aplicado al canvas"
+      ],
+      "priority": 9,
+      "passes": true,
+      "labels": [
+        "hooks",
+        "touch",
+        "mobile",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-007"
+      ],
+      "notes": "Ver PRD.md sección 4.2 y 4.3",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-010",
+      "title": "Crear entidad Player con rendering",
+      "description": "Crear src/entities/Player.ts con clase/factory para el jugador, incluyendo render en canvas con imagen cargada.",
+      "acceptanceCriteria": [
+        "Archivo src/entities/Player.ts creado",
+        "Factory function createPlayer() retorna Player con valores iniciales",
+        "Posición inicial: centrado horizontalmente, parte inferior del canvas",
+        "Dimensiones desde PLAYER_ASSET config",
+        "Velocidad inicial { vx: 0, vy: 0 }",
+        "Propiedades isInvulnerable=false, invulnerabilityTimer=0",
+        "Imagen cargada desde assets/player.png",
+        "Función renderPlayer(ctx, player, alpha) dibuja sprite interpolado",
+        "Fallback a rectángulo de color si imagen no carga"
+      ],
+      "priority": 10,
+      "passes": true,
+      "labels": [
+        "entities",
+        "player",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-004",
+        "US-007"
+      ],
+      "notes": "La imagen player.png está en src/assets/",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-011",
+      "title": "Implementar movimiento del jugador con aceleración",
+      "description": "Crear src/systems/MovementSystem.ts con lógica de movimiento suave usando aceleración/desaceleración y límites de canvas.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/MovementSystem.ts creado",
+        "Función updatePlayerMovement(player, input, dt) implementada",
+        "Aceleración cuando hay input (PLAYER_CONFIG.acceleration)",
+        "Desaceleración/fricción cuando no hay input (PLAYER_CONFIG.deceleration)",
+        "Velocidad limitada a PLAYER_CONFIG.maxSpeed",
+        "Posición actualizada: x += velocity.vx * dt",
+        "Límites del canvas respetados (no puede salirse)",
+        "Movimiento frame-independent usando delta time",
+        "Movimiento se siente suave y responsivo"
+      ],
+      "priority": 11,
+      "passes": true,
+      "labels": [
+        "systems",
+        "movement",
+        "player",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003",
+        "US-008",
+        "US-010"
+      ],
+      "notes": "Ver PRD.md sección 5.1 para fórmulas de movimiento",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-012",
+      "title": "Crear entidad FallingObject con pooling",
+      "description": "Crear src/entities/FallingObject.ts con clase que implementa Poolable para objetos que caen.",
+      "acceptanceCriteria": [
+        "Archivo src/entities/FallingObject.ts creado",
+        "Clase FallingObject implements Poolable",
+        "Propiedades: id, x, y, width, height, velocity, type, points, spriteIndex, active, isSaveable",
+        "Método reset() resetea todas las propiedades a valores default",
+        "Método spawn(x, type, speed, spriteIndex) inicializa objeto para uso",
+        "Factory function createFallingObjectPool() retorna ObjectPool<FallingObject> con 50 objetos iniciales",
+        "Imágenes good_1-4.png y bad_1-4.png cargadas y asociadas por spriteIndex"
+      ],
+      "priority": 12,
+      "passes": true,
+      "labels": [
+        "entities",
+        "falling-objects",
+        "pooling",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-004",
+        "US-005"
+      ],
+      "notes": "Las imágenes están en src/assets/",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-013",
+      "title": "Implementar sistema de spawn con fairness",
+      "description": "Crear src/core/SpawnSystem.ts con lógica de spawn que usa lanes, evita clusters, garantiza objetos buenos periódicamente, y respeta grace period inicial.",
+      "acceptanceCriteria": [
+        "Archivo src/core/SpawnSystem.ts creado",
+        "Pantalla dividida en SPAWN_CONFIG.lanes (6) carriles",
+        "Memoria de últimos 2 carriles usados para evitar repetición",
+        "Preferencia weighted random hacia carriles centrales",
+        "No excede SPAWN_CONFIG.maxItemsOnScreen (8)",
+        "Grace period: solo good items en primeros 3 segundos",
+        "Garantiza al menos 1 good item cada 4 spawns",
+        "Ratio good/bad basado en difficulty.badItemRatio",
+        "Intervalo de spawn basado en difficulty.spawnInterval",
+        "Método spawn() retorna FallingObject o null",
+        "Método update(dt) actualiza elapsed time"
+      ],
+      "priority": 13,
+      "passes": true,
+      "labels": [
+        "core",
+        "spawn",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003",
+        "US-012"
+      ],
+      "notes": "Ver PRD.md sección 9 para algoritmo completo de fairness",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-014",
+      "title": "Implementar movimiento de objetos cayendo",
+      "description": "Agregar lógica en MovementSystem para actualizar posición de objetos cayendo y marcarlos como 'saveable' cerca del suelo.",
+      "acceptanceCriteria": [
+        "Función updateFallingObjects(objects, difficulty, dt, canvasHeight) implementada",
+        "Objetos se mueven hacia abajo: y += fallSpeed * dt",
+        "Velocidad de caída viene de difficulty.fallSpeed",
+        "Objetos marcados isSaveable=true cuando y > canvasHeight - 50px",
+        "Objetos que salen del canvas son liberados al pool",
+        "Movimiento es frame-independent usando dt"
+      ],
+      "priority": 14,
+      "passes": true,
+      "labels": [
+        "systems",
+        "movement",
+        "falling-objects",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-012",
+        "US-013"
+      ],
+      "notes": "Ver PRD.md sección 5.2",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-015",
+      "title": "Implementar sistema de colisiones AABB",
+      "description": "Crear src/core/CollisionSystem.ts con detección de colisiones AABB y zonas de catch extendidas.",
+      "acceptanceCriteria": [
+        "Archivo src/core/CollisionSystem.ts creado",
+        "Función checkAABBCollision(a, b) retorna boolean",
+        "Función getCollisionInfo(a, b) retorna { colliding, overlapX, overlapY }",
+        "Función getCatchZone(player) retorna AABB con padding de 10px",
+        "Función getPerfectZone(player) retorna AABB 50% del tamaño centrado",
+        "Función checkCollisions(player, objects) retorna array de colisiones con tipo (normal/perfect)",
+        "Colisiones detectadas correctamente entre player y falling objects"
+      ],
+      "priority": 15,
+      "passes": true,
+      "labels": [
+        "core",
+        "collision",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md sección 3 para implementación AABB",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-016",
+      "title": "Implementar sistema de combo",
+      "description": "Crear src/systems/ComboSystem.ts con lógica de combos, multipliers, y timer decay.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/ComboSystem.ts creado",
+        "Clase ComboSystem con state: count, multiplier, timer, maxTimer",
+        "Método hit(isPerfect, isSave) incrementa combo y retorna puntos con multiplier",
+        "Multiplier aumenta en thresholds: 5->1.5x, 10->2x, 20->3x, 50->5x",
+        "Método miss() resetea combo a 0 y multiplier a 1",
+        "Método update(dt) decrementa timer, llama miss() si timer llega a 0",
+        "Timer se resetea a 2000ms en cada hit",
+        "Getters para comboCount, multiplier, timerPercent"
+      ],
+      "priority": 16,
+      "passes": true,
+      "labels": [
+        "systems",
+        "combo",
+        "score",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003"
+      ],
+      "notes": "Ver PRD.md sección 6.2 para lógica de combos",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-017",
+      "title": "Implementar sistema de puntuación",
+      "description": "Crear src/systems/ScoreSystem.ts que calcula puntos basado en tipo de item, zona de catch, y combo multiplier.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/ScoreSystem.ts creado",
+        "Función calculateScore(item, catchType, comboMultiplier) retorna puntos",
+        "Good item base: 10 puntos",
+        "Perfect catch bonus: x1.5",
+        "Save catch bonus (cerca del suelo): x2.0",
+        "Bad item penalty: -5 puntos",
+        "Puntos finales multiplicados por combo multiplier",
+        "Score nunca es negativo (mínimo 0)",
+        "Función updateScore(state, points) retorna nuevo state con score actualizado"
+      ],
+      "priority": 17,
+      "passes": true,
+      "labels": [
+        "systems",
+        "score",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003",
+        "US-016"
+      ],
+      "notes": "Ver PRD.md sección 6.1",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-018",
+      "title": "Implementar sistema de vidas",
+      "description": "Crear src/systems/LivesSystem.ts con lógica de vidas, invulnerabilidad temporal, y game over.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/LivesSystem.ts creado",
+        "Vidas iniciales: 3 (configurable)",
+        "Función loseLife(state) decrementa vidas y activa invulnerabilidad",
+        "Invulnerabilidad dura 1500ms después de perder vida",
+        "Durante invulnerabilidad, no se pueden perder más vidas",
+        "Game over cuando vidas llegan a 0 (status='gameOver')",
+        "Solo good items que llegan al suelo sin ser atrapados quitan vidas",
+        "Bad items que llegan al suelo NO quitan vidas",
+        "Función updateInvulnerability(state, dt) actualiza timer"
+      ],
+      "priority": 18,
+      "passes": true,
+      "labels": [
+        "systems",
+        "lives",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003"
+      ],
+      "notes": "Ver PRD.md sección 7",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-019",
+      "title": "Implementar sistema de dificultad progresiva",
+      "description": "Crear src/systems/DifficultySystem.ts con curva de dificultad logarítmica basada en score.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/DifficultySystem.ts creado",
+        "Función calculateDifficulty(score) retorna DifficultyState",
+        "Nivel aumenta cada 500 puntos (hasta nivel 20)",
+        "Curva logarítmica para transición suave",
+        "spawnInterval disminuye de 1500ms a 400ms",
+        "fallSpeed aumenta de 150 a 400 pixels/segundo",
+        "badItemRatio aumenta de 0.2 a 0.45",
+        "Valores interpolados con easing logarítmico",
+        "Dificultad se recalcula cuando score cambia"
+      ],
+      "priority": 19,
+      "passes": true,
+      "labels": [
+        "systems",
+        "difficulty",
+        "fase-2"
+      ],
+      "dependsOn": [
+        "US-003"
+      ],
+      "notes": "Ver PRD.md sección 8 para curvas de dificultad",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-020",
+      "title": "Crear componente HUD",
+      "description": "Crear src/components/HUD/ con componentes para mostrar score, vidas, combo indicator durante el juego.",
+      "acceptanceCriteria": [
+        "Componente HUD/ScoreDisplay.tsx muestra score actual",
+        "Componente HUD/LivesDisplay.tsx muestra vidas como corazones o número",
+        "Componente HUD/ComboIndicator.tsx muestra combo count y timer bar",
+        "Score en esquina superior izquierda",
+        "Vidas en esquina superior derecha",
+        "Combo indicator debajo del score (visible solo cuando combo > 0)",
+        "Fuente legible (mínimo 18px)",
+        "Respeta safe-area-inset-top para notch",
+        "No obstruye área de juego"
+      ],
+      "priority": 20,
+      "passes": true,
+      "labels": [
+        "components",
+        "ui",
+        "hud",
+        "fase-3"
+      ],
+      "dependsOn": [
+        "US-007"
+      ],
+      "notes": "Ver PRD.md sección 12.2 para safe areas",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-021",
+      "title": "Crear pantalla de menú principal",
+      "description": "Crear src/components/Menu/MainMenu.tsx con título, botón New Game, e instrucciones.",
+      "acceptanceCriteria": [
+        "Componente Menu/MainMenu.tsx creado",
+        "Título 'Catch Game' prominente",
+        "Botón 'New Game' funcional y accesible (min 48px touch target)",
+        "Click/tap en New Game cambia status a 'playing'",
+        "Instrucciones breves de controles (flechas/touch)",
+        "High score mostrado si existe",
+        "Diseño centrado y atractivo",
+        "Animación sutil de entrada"
+      ],
+      "priority": 21,
+      "passes": true,
+      "labels": [
+        "components",
+        "ui",
+        "menu",
+        "fase-3"
+      ],
+      "dependsOn": [
+        "US-007"
+      ],
+      "notes": "",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-022",
+      "title": "Crear pantalla de Game Over",
+      "description": "Crear src/components/Menu/GameOverScreen.tsx con score final, botones Play Again y Main Menu.",
+      "acceptanceCriteria": [
+        "Componente Menu/GameOverScreen.tsx creado",
+        "Mensaje 'Game Over' visible",
+        "Score final prominente",
+        "Indicador de 'New High Score!' si aplica",
+        "Botón 'Play Again' reinicia juego",
+        "Botón 'Main Menu' vuelve al menú",
+        "Botones con min 48px touch target",
+        "Animación de entrada desde el juego"
+      ],
+      "priority": 22,
+      "passes": true,
+      "labels": [
+        "components",
+        "ui",
+        "gameover",
+        "fase-3"
+      ],
+      "dependsOn": [
+        "US-018"
+      ],
+      "notes": "",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-023",
+      "title": "Crear pantalla de pausa",
+      "description": "Crear src/components/Menu/PauseMenu.tsx con overlay y opciones Resume/Quit.",
+      "acceptanceCriteria": [
+        "Componente Menu/PauseMenu.tsx creado",
+        "Overlay semitransparente sobre el juego",
+        "Mensaje 'Paused' visible",
+        "Botón 'Resume' continúa el juego",
+        "Botón 'Quit' vuelve al menú principal",
+        "Escape o tap en Resume cierra pausa",
+        "Game loop se detiene mientras está pausado"
+      ],
+      "priority": 23,
+      "passes": true,
+      "labels": [
+        "components",
+        "ui",
+        "pause",
+        "fase-3"
+      ],
+      "dependsOn": [
+        "US-008"
+      ],
+      "notes": "",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-024",
+      "title": "Integrar Howler.js y crear Sound Manager",
+      "description": "Crear src/audio/SoundManager.ts con clase singleton para manejar todos los sonidos del juego.",
+      "acceptanceCriteria": [
+        "Archivo src/audio/SoundManager.ts creado",
+        "Singleton pattern implementado",
+        "Método preload(sounds) carga todos los sonidos",
+        "Método play(name, options) reproduce sonido",
+        "Método playVaried(name, pitchVariation) reproduce con pitch aleatorio",
+        "Método playMusic(name, fadeTime) reproduce música con crossfade",
+        "Métodos setMasterVolume, setMusicVolume, setSfxVolume",
+        "Método toggleMute()",
+        "Auto-mute cuando document.hidden",
+        "Persistencia de settings en localStorage"
+      ],
+      "priority": 24,
+      "passes": true,
+      "labels": [
+        "audio",
+        "howler",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-001"
+      ],
+      "notes": "Ver PRD.md sección 10.2 para implementación",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-025",
+      "title": "Configurar archivos de sonido",
+      "description": "Crear src/audio/sounds.config.ts con configuración de todos los sonidos y crear placeholders o encontrar sonidos gratuitos.",
+      "acceptanceCriteria": [
+        "Archivo src/audio/sounds.config.ts creado con SOUNDS export",
+        "Sonidos configurados: catch, miss, badCatch, loseLife",
+        "Sonidos de combo: combo5, combo10, combo20",
+        "Sonidos UI: click",
+        "Sonidos eventos: gameOver, highScore",
+        "Música: menuMusic, gameMusic",
+        "Cada sonido con src array [.webm, .mp3], volume, pool (donde aplique)",
+        "Archivos de audio placeholder en src/assets/sounds/ (pueden ser silencios o beeps)"
+      ],
+      "priority": 25,
+      "passes": true,
+      "labels": [
+        "audio",
+        "config",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-024"
+      ],
+      "notes": "Ver PRD.md sección 10.1 para lista de sonidos",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-026",
+      "title": "Integrar sonidos en eventos del juego",
+      "description": "Conectar Sound Manager con todos los eventos del gameplay: catches, misses, combos, game over.",
+      "acceptanceCriteria": [
+        "Sonido 'catch' con pitch variado al atrapar good item",
+        "Sonido 'badCatch' al atrapar bad item",
+        "Sonido 'miss' sutil cuando good item llega al suelo",
+        "Sonido 'loseLife' al perder vida",
+        "Sonidos 'combo5/10/20' en milestones de combo",
+        "Sonido 'gameOver' al perder",
+        "Sonido 'highScore' si es nuevo récord",
+        "Música 'menuMusic' en menú, 'gameMusic' durante juego",
+        "Transición de música con crossfade"
+      ],
+      "priority": 26,
+      "passes": true,
+      "labels": [
+        "audio",
+        "integration",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-024",
+        "US-025",
+        "US-015",
+        "US-016",
+        "US-018"
+      ],
+      "notes": "",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-027",
+      "title": "Implementar feedback visual: floating text",
+      "description": "Crear src/systems/FeedbackSystem.ts con floating text para mostrar puntos ganados.",
+      "acceptanceCriteria": [
+        "Archivo src/systems/FeedbackSystem.ts creado",
+        "Clase FloatingTextManager implementada",
+        "Método spawn(text, x, y, color) crea texto flotante",
+        "Texto sube, se desvanece, y escala",
+        "Animación dura ~1 segundo",
+        "Múltiples textos simultáneos soportados",
+        "Método update(dt) actualiza animaciones",
+        "Método render(ctx) dibuja textos",
+        "Mostrar '+10' verde para good, '-5' rojo para bad, 'COMBO x5!' dorado"
+      ],
+      "priority": 27,
+      "passes": true,
+      "labels": [
+        "systems",
+        "feedback",
+        "visual",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-007"
+      ],
+      "notes": "Ver PRD.md sección 11.2",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-028",
+      "title": "Implementar screen shake",
+      "description": "Agregar screen shake sutil para feedback de acciones.",
+      "acceptanceCriteria": [
+        "Clase ScreenShake en FeedbackSystem",
+        "Método shake(intensity) añade intensidad",
+        "Método update() retorna offset {x, y} con decay",
+        "Decay exponencial (0.9 por frame)",
+        "Intensidad máxima capeada a 20px",
+        "Shake aplicado con ctx.translate() antes de render",
+        "Shake sutil (2-5) para catch, más fuerte (8-10) para combos"
+      ],
+      "priority": 28,
+      "passes": true,
+      "labels": [
+        "systems",
+        "feedback",
+        "visual",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-027"
+      ],
+      "notes": "Ver PRD.md sección 11.1. Respetar prefers-reduced-motion.",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-029",
+      "title": "Implementar persistencia con localStorage",
+      "description": "Crear src/utils/storage.ts para guardar y cargar high score y settings.",
+      "acceptanceCriteria": [
+        "Archivo src/utils/storage.ts creado",
+        "Interface SaveData con highScore, totalGamesPlayed, settings",
+        "Función saveGame(data) guarda en localStorage",
+        "Función loadGame() retorna SaveData o null",
+        "High score se guarda al terminar juego si es mayor al anterior",
+        "Settings de audio se persisten",
+        "Manejo de errores si localStorage no disponible"
+      ],
+      "priority": 29,
+      "passes": true,
+      "labels": [
+        "utils",
+        "persistence",
+        "fase-4"
+      ],
+      "dependsOn": [
+        "US-002"
+      ],
+      "notes": "Ver PRD.md sección 13",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-030",
+      "title": "Crear componente Game principal",
+      "description": "Crear src/components/Game/Game.tsx que orquesta todos los sistemas, maneja estado del juego, y renderiza UI apropiada.",
+      "acceptanceCriteria": [
+        "Componente Game/Game.tsx creado",
+        "Usa useRef para gameState (evita re-renders innecesarios)",
+        "Usa useState solo para UI que necesita re-render (score, lives display)",
+        "Integra GameLoop, SpawnSystem, CollisionSystem, ComboSystem, ScoreSystem, LivesSystem, DifficultySystem",
+        "Renderiza GameCanvas con interpolación",
+        "Renderiza HUD sobre el canvas",
+        "Muestra MainMenu cuando status='menu'",
+        "Muestra PauseMenu cuando status='paused'",
+        "Muestra GameOverScreen cuando status='gameOver'",
+        "Integra input (keyboard + touch)",
+        "Integra audio"
+      ],
+      "priority": 30,
+      "passes": true,
+      "labels": [
+        "components",
+        "game",
+        "integration",
+        "fase-5"
+      ],
+      "dependsOn": [
+        "US-006",
+        "US-007",
+        "US-011",
+        "US-013",
+        "US-014",
+        "US-015",
+        "US-016",
+        "US-017",
+        "US-018",
+        "US-019",
+        "US-020",
+        "US-021",
+        "US-022",
+        "US-023"
+      ],
+      "notes": "Este es el componente de integración principal",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-031",
+      "title": "Crear settings de accesibilidad",
+      "description": "Crear src/components/Settings/AccessibilitySettings.tsx con opciones para daltonismo y reduced motion.",
+      "acceptanceCriteria": [
+        "Componente Settings/AccessibilitySettings.tsx creado",
+        "Selector de color scheme: Default, Deuteranopia, Protanopia",
+        "Toggle para reducir animaciones",
+        "Hook useAccessibilityPreferences detecta prefers-reduced-motion del sistema",
+        "Settings se persisten en localStorage",
+        "Cuando reduced motion activo: sin screen shake, animaciones simplificadas"
+      ],
+      "priority": 31,
+      "passes": true,
+      "labels": [
+        "components",
+        "accessibility",
+        "fase-5"
+      ],
+      "dependsOn": [
+        "US-029"
+      ],
+      "notes": "Ver PRD.md sección 14",
+      "completionNotes": "Completed by agent"
+    },
+    {
+      "id": "US-032",
+      "title": "Testing y corrección de bugs",
+      "description": "Ejecutar todos los test cases del PRD, verificar en múltiples dispositivos, y corregir bugs encontrados.",
+      "acceptanceCriteria": [
+        "TC-01: Iniciar juego - Score=0, Lives=3, Status=playing",
+        "TC-02: Movimiento con flechas - Suave y responsivo",
+        "TC-03: Movimiento con touch - Continuo mientras se toca",
+        "TC-04: Atrapar good item - Score aumenta, sonido, floating text",
+        "TC-05: Atrapar bad item - Score disminuye, sonido",
+        "TC-06: Good item cae al piso - Pierde 1 vida, sonido",
+        "TC-07: Bad item cae al piso - Sin penalización",
+        "TC-08: Vidas=0 - Game Over screen aparece",
+        "TC-09: Combo 5+ - Multiplier activo, sonido, feedback",
+        "TC-10: Escape/Space - Pausa el juego",
+        "TC-11: Resize - Canvas se escala correctamente",
+        "TC-12: High score - Se guarda en localStorage",
+        "60 FPS estable en Chrome, Firefox, Safari",
+        "Touch controls funcionan en iOS Safari y Android Chrome",
+        "bun run build sin errores ni warnings"
+      ],
+      "priority": 32,
+      "passes": false,
+      "labels": [
+        "testing",
+        "qa",
+        "fase-5"
+      ],
+      "dependsOn": [
+        "US-030",
+        "US-026",
+        "US-031"
+      ],
+      "notes": "Ver PRD.md sección 17 para test cases completos"
+    }
+  ],
+  "metadata": {
+    "updatedAt": "2026-01-17T00:32:35.984Z"
+  }
+}

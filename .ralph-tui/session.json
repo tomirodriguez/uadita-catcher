@@ -1,0 +1,428 @@
+{
+  "version": 1,
+  "sessionId": "5d6876f9-00b0-48e4-9bdc-2aa472454bd4",
+  "status": "interrupted",
+  "startedAt": "2026-01-16T23:48:07.360Z",
+  "updatedAt": "2026-01-17T00:32:36.026Z",
+  "currentIteration": 21,
+  "maxIterations": 100,
+  "tasksCompleted": 21,
+  "isPaused": false,
+  "agentPlugin": "claude",
+  "trackerState": {
+    "plugin": "json",
+    "prdPath": "./prd.json",
+    "totalTasks": 32,
+    "tasks": [
+      {
+        "id": "US-001",
+        "title": "Setup proyecto con Vite + React + TypeScript",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-002",
+        "title": "Definir interfaces TypeScript completas",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-003",
+        "title": "Crear archivo de configuración del juego",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-004",
+        "title": "Crear configuración de assets",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-005",
+        "title": "Implementar Object Pool genérico",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-006",
+        "title": "Implementar Game Loop con fixed timestep",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-007",
+        "title": "Crear componente Canvas con scaling responsive",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-008",
+        "title": "Implementar hook useInput para teclado",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-009",
+        "title": "Implementar touch controls para móvil",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-010",
+        "title": "Crear entidad Player con rendering",
+        "status": "completed",
+        "completedInSession": false
+      },
+      {
+        "id": "US-011",
+        "title": "Implementar movimiento del jugador con aceleración",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-012",
+        "title": "Crear entidad FallingObject con pooling",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-013",
+        "title": "Implementar sistema de spawn con fairness",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-014",
+        "title": "Implementar movimiento de objetos cayendo",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-015",
+        "title": "Implementar sistema de colisiones AABB",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-016",
+        "title": "Implementar sistema de combo",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-017",
+        "title": "Implementar sistema de puntuación",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-018",
+        "title": "Implementar sistema de vidas",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-019",
+        "title": "Implementar sistema de dificultad progresiva",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-020",
+        "title": "Crear componente HUD",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-021",
+        "title": "Crear pantalla de menú principal",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-022",
+        "title": "Crear pantalla de Game Over",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-023",
+        "title": "Crear pantalla de pausa",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-024",
+        "title": "Integrar Howler.js y crear Sound Manager",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-025",
+        "title": "Configurar archivos de sonido",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-026",
+        "title": "Integrar sonidos en eventos del juego",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-027",
+        "title": "Implementar feedback visual: floating text",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-028",
+        "title": "Implementar screen shake",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-029",
+        "title": "Implementar persistencia con localStorage",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-030",
+        "title": "Crear componente Game principal",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-031",
+        "title": "Crear settings de accesibilidad",
+        "status": "completed",
+        "completedInSession": true
+      },
+      {
+        "id": "US-032",
+        "title": "Testing y corrección de bugs",
+        "status": "open",
+        "completedInSession": false
+      }
+    ]
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "status": "completed",
+      "taskId": "US-011",
+      "taskTitle": "Implementar movimiento del jugador con aceleración",
+      "taskCompleted": true,
+      "durationMs": 86811,
+      "startedAt": "2026-01-16T23:48:09.022Z",
+      "endedAt": "2026-01-16T23:49:35.833Z"
+    },
+    {
+      "iteration": 2,
+      "status": "completed",
+      "taskId": "US-012",
+      "taskTitle": "Crear entidad FallingObject con pooling",
+      "taskCompleted": true,
+      "durationMs": 113096,
+      "startedAt": "2026-01-16T23:49:36.850Z",
+      "endedAt": "2026-01-16T23:51:29.946Z"
+    },
+    {
+      "iteration": 3,
+      "status": "completed",
+      "taskId": "US-013",
+      "taskTitle": "Implementar sistema de spawn con fairness",
+      "taskCompleted": true,
+      "durationMs": 97911,
+      "startedAt": "2026-01-16T23:51:30.955Z",
+      "endedAt": "2026-01-16T23:53:08.866Z"
+    },
+    {
+      "iteration": 4,
+      "status": "completed",
+      "taskId": "US-014",
+      "taskTitle": "Implementar movimiento de objetos cayendo",
+      "taskCompleted": true,
+      "durationMs": 86126,
+      "startedAt": "2026-01-16T23:53:09.883Z",
+      "endedAt": "2026-01-16T23:54:36.009Z"
+    },
+    {
+      "iteration": 5,
+      "status": "completed",
+      "taskId": "US-015",
+      "taskTitle": "Implementar sistema de colisiones AABB",
+      "taskCompleted": true,
+      "durationMs": 86265,
+      "startedAt": "2026-01-16T23:54:37.027Z",
+      "endedAt": "2026-01-16T23:56:03.292Z"
+    },
+    {
+      "iteration": 6,
+      "status": "completed",
+      "taskId": "US-016",
+      "taskTitle": "Implementar sistema de combo",
+      "taskCompleted": true,
+      "durationMs": 68581,
+      "startedAt": "2026-01-16T23:56:04.309Z",
+      "endedAt": "2026-01-16T23:57:12.890Z"
+    },
+    {
+      "iteration": 7,
+      "status": "completed",
+      "taskId": "US-017",
+      "taskTitle": "Implementar sistema de puntuación",
+      "taskCompleted": true,
+      "durationMs": 82113,
+      "startedAt": "2026-01-16T23:57:13.906Z",
+      "endedAt": "2026-01-16T23:58:36.019Z"
+    },
+    {
+      "iteration": 8,
+      "status": "completed",
+      "taskId": "US-018",
+      "taskTitle": "Implementar sistema de vidas",
+      "taskCompleted": true,
+      "durationMs": 85595,
+      "startedAt": "2026-01-16T23:58:37.033Z",
+      "endedAt": "2026-01-17T00:00:02.628Z"
+    },
+    {
+      "iteration": 9,
+      "status": "completed",
+      "taskId": "US-019",
+      "taskTitle": "Implementar sistema de dificultad progresiva",
+      "taskCompleted": true,
+      "durationMs": 69105,
+      "startedAt": "2026-01-17T00:00:03.646Z",
+      "endedAt": "2026-01-17T00:01:12.751Z"
+    },
+    {
+      "iteration": 10,
+      "status": "completed",
+      "taskId": "US-020",
+      "taskTitle": "Crear componente HUD",
+      "taskCompleted": true,
+      "durationMs": 121859,
+      "startedAt": "2026-01-17T00:01:13.760Z",
+      "endedAt": "2026-01-17T00:03:15.619Z"
+    },
+    {
+      "iteration": 11,
+      "status": "completed",
+      "taskId": "US-021",
+      "taskTitle": "Crear pantalla de menú principal",
+      "taskCompleted": true,
+      "durationMs": 95389,
+      "startedAt": "2026-01-17T00:03:16.636Z",
+      "endedAt": "2026-01-17T00:04:52.025Z"
+    },
+    {
+      "iteration": 12,
+      "status": "completed",
+      "taskId": "US-022",
+      "taskTitle": "Crear pantalla de Game Over",
+      "taskCompleted": true,
+      "durationMs": 80325,
+      "startedAt": "2026-01-17T00:04:53.040Z",
+      "endedAt": "2026-01-17T00:06:13.365Z"
+    },
+    {
+      "iteration": 13,
+      "status": "completed",
+      "taskId": "US-023",
+      "taskTitle": "Crear pantalla de pausa",
+      "taskCompleted": true,
+      "durationMs": 74407,
+      "startedAt": "2026-01-17T00:06:14.382Z",
+      "endedAt": "2026-01-17T00:07:28.789Z"
+    },
+    {
+      "iteration": 14,
+      "status": "completed",
+      "taskId": "US-024",
+      "taskTitle": "Integrar Howler.js y crear Sound Manager",
+      "taskCompleted": true,
+      "durationMs": 119049,
+      "startedAt": "2026-01-17T00:07:29.803Z",
+      "endedAt": "2026-01-17T00:09:28.852Z"
+    },
+    {
+      "iteration": 15,
+      "status": "completed",
+      "taskId": "US-025",
+      "taskTitle": "Configurar archivos de sonido",
+      "taskCompleted": true,
+      "durationMs": 100628,
+      "startedAt": "2026-01-17T00:09:29.864Z",
+      "endedAt": "2026-01-17T00:11:10.492Z"
+    },
+    {
+      "iteration": 16,
+      "status": "completed",
+      "taskId": "US-026",
+      "taskTitle": "Integrar sonidos en eventos del juego",
+      "taskCompleted": true,
+      "durationMs": 266846,
+      "startedAt": "2026-01-17T00:11:11.521Z",
+      "endedAt": "2026-01-17T00:15:38.367Z"
+    },
+    {
+      "iteration": 17,
+      "status": "completed",
+      "taskId": "US-027",
+      "taskTitle": "Implementar feedback visual: floating text",
+      "taskCompleted": true,
+      "durationMs": 108068,
+      "startedAt": "2026-01-17T00:15:39.384Z",
+      "endedAt": "2026-01-17T00:17:27.452Z"
+    },
+    {
+      "iteration": 18,
+      "status": "completed",
+      "taskId": "US-028",
+      "taskTitle": "Implementar screen shake",
+      "taskCompleted": true,
+      "durationMs": 102837,
+      "startedAt": "2026-01-17T00:17:28.468Z",
+      "endedAt": "2026-01-17T00:19:11.305Z"
+    },
+    {
+      "iteration": 19,
+      "status": "completed",
+      "taskId": "US-029",
+      "taskTitle": "Implementar persistencia con localStorage",
+      "taskCompleted": true,
+      "durationMs": 97978,
+      "startedAt": "2026-01-17T00:19:12.319Z",
+      "endedAt": "2026-01-17T00:20:50.297Z"
+    },
+    {
+      "iteration": 20,
+      "status": "completed",
+      "taskId": "US-030",
+      "taskTitle": "Crear componente Game principal",
+      "taskCompleted": true,
+      "durationMs": 380247,
+      "startedAt": "2026-01-17T00:20:51.314Z",
+      "endedAt": "2026-01-17T00:27:11.561Z"
+    },
+    {
+      "iteration": 21,
+      "status": "completed",
+      "taskId": "US-031",
+      "taskTitle": "Crear settings de accesibilidad",
+      "taskCompleted": true,
+      "durationMs": 251341,
+      "startedAt": "2026-01-17T00:27:12.577Z",
+      "endedAt": "2026-01-17T00:31:23.918Z"
+    }
+  ],
+  "skippedTaskIds": [],
+  "cwd": "/Users/tomiardz/Projects/uadita-catch",
+  "activeTaskIds": [],
+  "subagentPanelVisible": false,
+  "endedAt": "2026-01-17T00:32:36.026Z"
+}
