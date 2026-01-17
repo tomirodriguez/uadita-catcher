@@ -347,10 +347,10 @@ export function Game() {
         } else {
           // Bad item caught
           // bad_1 (index 0), bad_2 (index 1): -50 points + lose life
-          // bad_3 (index 2), bad_4 (index 3): lose ALL points + lose life
+          // bad_3 (index 2), bad_4 (index 3): -100 points + lose life
           const isMajorBad = obj.spriteIndex >= 2 // bad_3 or bad_4
           const penalty = isMajorBad
-            ? gameStateRef.current.score // Lose ALL points
+            ? SCORE_CONFIG.badItem.majorPenalty // Lose 100 points
             : SCORE_CONFIG.badItem.minorPenalty // Lose 50 points
 
           gameStateRef.current.score = Math.max(0, gameStateRef.current.score - penalty)
