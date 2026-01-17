@@ -1,22 +1,5 @@
 import type { DifficultyState } from '../types/game'
-
-/**
- * Difficulty configuration constants
- */
-const DIFFICULTY_CONFIG = {
-  initial: {
-    spawnInterval: 1500, // ms between spawns
-    fallSpeed: 150, // pixels/second
-    badItemRatio: 0.2, // 20% bad items
-  },
-  max: {
-    spawnInterval: 400,
-    fallSpeed: 400,
-    badItemRatio: 0.45,
-  },
-  scorePerLevel: 500, // Score needed to increase level
-  maxLevel: 20,
-}
+import { DIFFICULTY_CONFIG } from '../config/gameConfig'
 
 /**
  * Interpolates between min and max values using the eased progress
@@ -26,13 +9,13 @@ function lerp(min: number, max: number, t: number): number {
 }
 
 /**
- * Applies logarithmic easing to a linear progress value
- * This creates a smooth, gradual curve that increases quickly at first
- * then slows down as it approaches the maximum
+ * Applies a curve that makes difficulty progression more noticeable.
+ * Starts slightly accelerated then becomes more linear for consistent feel.
  */
-function logarithmicEasing(t: number): number {
-  // log(1 + t * (e - 1)) maps [0,1] to [0,1] with logarithmic curve
-  return Math.log(1 + t * (Math.E - 1))
+function difficultyEasing(t: number): number {
+  // Blend of linear and quadratic for noticeable but fair progression
+  // At t=0.5 this gives ~0.375, making mid-game noticeably harder
+  return t * (0.5 + 0.5 * t)
 }
 
 /**
@@ -52,8 +35,8 @@ export function calculateDifficulty(score: number): DifficultyState {
   // Calculate linear progress (0 to 1)
   const linearProgress = level / DIFFICULTY_CONFIG.maxLevel
 
-  // Apply logarithmic easing for smooth transition
-  const easedProgress = logarithmicEasing(linearProgress)
+  // Apply easing for noticeable progression
+  const easedProgress = difficultyEasing(linearProgress)
 
   // Interpolate all difficulty values
   return {
