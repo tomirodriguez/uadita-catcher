@@ -326,7 +326,13 @@ export function Game() {
           }
         } else {
           // Bad item caught
-          const penalty = Math.abs(SCORE_CONFIG.badItem.penalty)
+          // bad_1 (index 0), bad_2 (index 1): -50 points + lose life
+          // bad_3 (index 2), bad_4 (index 3): lose ALL points + lose life
+          const isMajorBad = obj.spriteIndex >= 2 // bad_3 or bad_4
+          const penalty = isMajorBad
+            ? gameStateRef.current.score // Lose ALL points
+            : SCORE_CONFIG.badItem.minorPenalty // Lose 50 points
+
           gameStateRef.current.score = Math.max(0, gameStateRef.current.score - penalty)
 
           // Play bad catch sound
@@ -336,6 +342,35 @@ export function Game() {
           comboSystemRef.current.miss()
           sounds.resetComboMilestone()
 
+          // Lose a life (if not invulnerable)
+          if (!gameStateRef.current.player.isInvulnerable) {
+            sounds.playLoseLife()
+            gameStateRef.current = loseLife(gameStateRef.current)
+
+            // Check for game over
+            if (gameStateRef.current.status === 'gameOver') {
+              gameLoopRef.current?.stop()
+
+              // Record game and check for high score
+              const isNewHighScore = gameStateRef.current.score > gameStateRef.current.highScore
+              if (isNewHighScore) {
+                gameStateRef.current.highScore = gameStateRef.current.score
+              }
+              recordGamePlayed(gameStateRef.current.score)
+
+              setUiState((prev) => ({
+                ...prev,
+                status: 'gameOver',
+                isNewHighScore,
+                highScore: gameStateRef.current.highScore,
+              }))
+
+              // Release the object and return early
+              pool.release(obj)
+              return
+            }
+          }
+
           // Add visual feedback
           floatingTextRef.current.spawnBadCatch(
             penalty,
@@ -343,8 +378,8 @@ export function Game() {
             obj.y
           )
 
-          // Screen shake for bad catch
-          screenShakeRef.current.shake(5)
+          // Screen shake for bad catch (stronger for major bad items)
+          screenShakeRef.current.shake(isMajorBad ? 10 : 6)
         }
 
         // Release the object back to pool
