@@ -261,6 +261,12 @@ export function renderFallingObject(
 
   ctx.save()
 
+  // Add glow for visibility
+  ctx.shadowColor = 'rgba(255, 255, 255, 0.7)'
+  ctx.shadowBlur = 15
+  ctx.shadowOffsetX = 0
+  ctx.shadowOffsetY = 0
+
   if (image) {
     ctx.drawImage(image, renderX, renderY, obj.width, obj.height)
   } else {
@@ -273,6 +279,12 @@ export function renderFallingObject(
     ctx.lineWidth = 2
     ctx.strokeRect(renderX, renderY, obj.width, obj.height)
   }
+
+  // Clear shadow for debug rendering
+  ctx.shadowColor = 'transparent'
+  ctx.shadowBlur = 0
+  ctx.shadowOffsetX = 0
+  ctx.shadowOffsetY = 0
 
   // Debug: draw hitbox
   if (DEBUG_CONFIG.showHitboxes && !import.meta.env.PROD) {

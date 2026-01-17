@@ -88,6 +88,7 @@ export function Game() {
   const comboSystemRef = useRef<ComboSystem>(new ComboSystem())
   const screenShakeRef = useRef<ScreenShake>(new ScreenShake())
   const floatingTextRef = useRef<FloatingTextManager>(new FloatingTextManager())
+  const backgroundImageRef = useRef<HTMLImageElement | null>(null)
 
   // UI state that triggers re-renders
   const [uiState, setUiState] = useState({
@@ -426,9 +427,22 @@ export function Game() {
     const state = gameStateRef.current
     if (state.status !== 'playing' && state.status !== 'paused') return
 
-    // Clear canvas with background
-    ctx.fillStyle = '#1a1a2e'
-    ctx.fillRect(0, 0, CANVAS_CONFIG.BASE_WIDTH, CANVAS_CONFIG.BASE_HEIGHT)
+    // Draw background image (or fallback color)
+    if (backgroundImageRef.current) {
+      ctx.drawImage(
+        backgroundImageRef.current,
+        0,
+        0,
+        CANVAS_CONFIG.BASE_WIDTH,
+        CANVAS_CONFIG.BASE_HEIGHT
+      )
+      // Darken overlay to reduce brightness
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+      ctx.fillRect(0, 0, CANVAS_CONFIG.BASE_WIDTH, CANVAS_CONFIG.BASE_HEIGHT)
+    } else {
+      ctx.fillStyle = '#1a1a2e'
+      ctx.fillRect(0, 0, CANVAS_CONFIG.BASE_WIDTH, CANVAS_CONFIG.BASE_HEIGHT)
+    }
 
     // Get screen shake offset
     const shakeOffset = screenShakeRef.current.update()
@@ -533,6 +547,13 @@ export function Game() {
 
   // Load assets on mount
   useEffect(() => {
+    // Load background image
+    const bgImg = new Image()
+    bgImg.src = '/images/background.avif'
+    bgImg.onload = () => {
+      backgroundImageRef.current = bgImg
+    }
+
     Promise.all([loadPlayerImage(), loadFallingObjectImages()]).catch((error) => {
       console.warn('Failed to load some game assets:', error)
     })
