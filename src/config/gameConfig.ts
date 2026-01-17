@@ -16,8 +16,8 @@ export const PLAYER_CONFIG = {
   maxSpeed: 500, // pixels/second
   acceleration: 2000, // pixels/second²
   deceleration: 3000, // friction
-  width: 64,
-  height: 64,
+  width: 100,
+  height: 100,
 } as const
 
 /**
@@ -54,7 +54,7 @@ export const DIFFICULTY_CONFIG = {
   initial: {
     spawnInterval: 1500, // ms between spawns
     fallSpeed: 250, // pixels/second
-    badItemRatio: 0.25, // 25% bad items
+    badItemRatio: 0.35, // 35% bad items
   },
   max: {
     spawnInterval: 400,
@@ -70,10 +70,10 @@ export const DIFFICULTY_CONFIG = {
  */
 export const SPAWN_CONFIG = {
   maxItemsOnScreen: 8,
-  lanes: 6, // Divide screen into lanes
+  lanes: 5, // Divide screen into lanes (reduced for larger items)
   guaranteedGoodEvery: 5, // Guarantee 1 good every N spawns
-  gracePeriodStart: 2500, // ms without bad items at start
-  minHorizontalGap: 60, // pixels between items
+  gracePeriodStart: 1500, // ms without bad items at start
+  minHorizontalGap: 80, // pixels between items
   recentLaneMemory: 2, // Avoid repeating lanes
 } as const
 
