@@ -26,15 +26,17 @@ function difficultyEasing(t: number): number {
  * @returns DifficultyState with level, spawnInterval, fallSpeed, and badItemRatio
  */
 export function calculateDifficulty(score: number): DifficultyState {
-  // Calculate level (0 to maxLevel) based on score
-  // Level increases every 500 points, capped at level 20
-  const level = Math.min(
+  // Calculate internal level (0 to maxLevel-1) based on score for difficulty calculations
+  const internalLevel = Math.min(
     Math.floor(score / DIFFICULTY_CONFIG.scorePerLevel),
-    DIFFICULTY_CONFIG.maxLevel
+    DIFFICULTY_CONFIG.maxLevel - 1
   )
 
-  // Calculate linear progress (0 to 1)
-  const linearProgress = level / DIFFICULTY_CONFIG.maxLevel
+  // Display level starts at 1 (1-indexed for player-facing display)
+  const level = internalLevel + 1
+
+  // Calculate linear progress (0 to 1) using internal level
+  const linearProgress = internalLevel / (DIFFICULTY_CONFIG.maxLevel - 1)
 
   // Apply easing for noticeable progression
   const easedProgress = difficultyEasing(linearProgress)

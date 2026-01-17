@@ -78,6 +78,21 @@ export function getCollisionInfo(a: AABB, b: AABB): CollisionResult {
 }
 
 /**
+ * Gets the actual hitbox AABB for a player (using hitbox dimensions).
+ *
+ * @param player - The player entity
+ * @returns AABB representing the player's hitbox
+ */
+export function getPlayerHitbox(player: Player): AABB {
+  return {
+    x: player.x + player.hitbox.offsetX,
+    y: player.y + player.hitbox.offsetY,
+    width: player.hitbox.width,
+    height: player.hitbox.height,
+  }
+}
+
+/**
  * Gets the catch zone AABB for a player.
  * The catch zone is larger than the player hitbox by CATCH_ZONE_PADDING
  * on all sides, making it easier to catch falling objects.
@@ -86,33 +101,35 @@ export function getCollisionInfo(a: AABB, b: AABB): CollisionResult {
  * @returns AABB representing the catch zone
  */
 export function getCatchZone(player: Player): AABB {
+  const hitbox = getPlayerHitbox(player)
   return {
-    x: player.x - CATCH_ZONE_PADDING,
-    y: player.y - CATCH_ZONE_PADDING,
-    width: player.width + CATCH_ZONE_PADDING * 2,
-    height: player.height + CATCH_ZONE_PADDING * 2,
+    x: hitbox.x - CATCH_ZONE_PADDING,
+    y: hitbox.y - CATCH_ZONE_PADDING,
+    width: hitbox.width + CATCH_ZONE_PADDING * 2,
+    height: hitbox.height + CATCH_ZONE_PADDING * 2,
   }
 }
 
 /**
  * Gets the perfect zone AABB for a player.
- * The perfect zone is centered on the player and is 50% of the player's size.
+ * The perfect zone is centered on the player's hitbox and is 50% of the hitbox size.
  * Catching objects in this zone awards bonus points.
  *
  * @param player - The player entity
  * @returns AABB representing the perfect zone
  */
 export function getPerfectZone(player: Player): AABB {
-  const perfectWidth = player.width * PERFECT_ZONE_SIZE
-  const perfectHeight = player.height * PERFECT_ZONE_SIZE
+  const hitbox = getPlayerHitbox(player)
+  const perfectWidth = hitbox.width * PERFECT_ZONE_SIZE
+  const perfectHeight = hitbox.height * PERFECT_ZONE_SIZE
 
-  // Center the perfect zone on the player
-  const offsetX = (player.width - perfectWidth) / 2
-  const offsetY = (player.height - perfectHeight) / 2
+  // Center the perfect zone on the hitbox
+  const offsetX = (hitbox.width - perfectWidth) / 2
+  const offsetY = (hitbox.height - perfectHeight) / 2
 
   return {
-    x: player.x + offsetX,
-    y: player.y + offsetY,
+    x: hitbox.x + offsetX,
+    y: hitbox.y + offsetY,
     width: perfectWidth,
     height: perfectHeight,
   }
@@ -145,14 +162,15 @@ export function checkCollisions(
     if (!obj.active) continue
 
     // Skip objects in the neutral zone (too far down to catch)
+    // Use visual height for neutral zone check (when object is visually off screen)
     if (obj.y + obj.height > neutralZoneStart) continue
 
-    // Create AABB for the falling object
+    // Create AABB for the falling object using hitbox dimensions
     const objectBox: AABB = {
-      x: obj.x,
-      y: obj.y,
-      width: obj.width,
-      height: obj.height,
+      x: obj.x + obj.hitbox.offsetX,
+      y: obj.y + obj.hitbox.offsetY,
+      width: obj.hitbox.width,
+      height: obj.hitbox.height,
     }
 
     // Check if object is within catch zone

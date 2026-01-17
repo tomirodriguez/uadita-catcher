@@ -2,7 +2,7 @@
 
 import type { Player } from '../types/game'
 import { PLAYER_ASSET } from '../config/assets'
-import { CANVAS_CONFIG } from '../config/gameConfig'
+import { CANVAS_CONFIG, DEBUG_CONFIG } from '../config/gameConfig'
 
 /**
  * Player sprite image for rendering.
@@ -71,6 +71,12 @@ export function createPlayer(): Player {
     speed: 0,
     isInvulnerable: false,
     invulnerabilityTimer: 0,
+    hitbox: {
+      width: PLAYER_ASSET.hitbox.width,
+      height: PLAYER_ASSET.hitbox.height,
+      offsetX: PLAYER_ASSET.hitbox.offsetX,
+      offsetY: PLAYER_ASSET.hitbox.offsetY,
+    },
   }
 }
 
@@ -129,6 +135,18 @@ export function renderPlayer(
     ctx.strokeStyle = '#2A5A99'
     ctx.lineWidth = 2
     ctx.strokeRect(renderX, renderY, player.width, player.height)
+  }
+
+  // Debug: draw hitbox
+  if (DEBUG_CONFIG.showHitboxes && !import.meta.env.PROD) {
+    ctx.strokeStyle = DEBUG_CONFIG.hitboxColor
+    ctx.lineWidth = 2
+    ctx.strokeRect(
+      renderX + player.hitbox.offsetX,
+      renderY + player.hitbox.offsetY,
+      player.hitbox.width,
+      player.hitbox.height
+    )
   }
 
   ctx.restore()

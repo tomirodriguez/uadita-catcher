@@ -17,6 +17,13 @@ export interface Dimensions {
 
 export interface AABB extends Position, Dimensions {}
 
+export interface Hitbox {
+  width: number
+  height: number
+  offsetX: number
+  offsetY: number
+}
+
 export interface Poolable {
   active: boolean
   reset(): void
@@ -31,6 +38,7 @@ export interface Player extends GameObject {
   speed: number
   isInvulnerable: boolean
   invulnerabilityTimer: number
+  hitbox: Hitbox
 }
 
 export interface FallingObject extends GameObject, Poolable {
@@ -38,6 +46,7 @@ export interface FallingObject extends GameObject, Poolable {
   points: number
   spriteIndex: number
   isSaveable: boolean
+  hitbox: Hitbox
 }
 
 export type GameStatus = 'menu' | 'playing' | 'paused' | 'gameOver'

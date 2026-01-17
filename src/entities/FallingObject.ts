@@ -1,6 +1,6 @@
 // entities/FallingObject.ts
 
-import type { FallingObject, Poolable, Velocity } from '../types/game'
+import type { FallingObject, Poolable, Velocity, Hitbox } from '../types/game'
 import { ObjectPool } from '../core/ObjectPool'
 import { GOOD_ITEMS, BAD_ITEMS } from '../config/assets'
 
@@ -140,6 +140,7 @@ export class FallingObjectEntity implements FallingObject, Poolable {
   spriteIndex: number
   active: boolean
   isSaveable: boolean
+  hitbox: Hitbox
 
   constructor() {
     this.id = generateId()
@@ -153,6 +154,7 @@ export class FallingObjectEntity implements FallingObject, Poolable {
     this.spriteIndex = 0
     this.active = false
     this.isSaveable = false
+    this.hitbox = { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT, offsetX: 0, offsetY: 0 }
   }
 
   /**
@@ -170,6 +172,7 @@ export class FallingObjectEntity implements FallingObject, Poolable {
     this.points = 0
     this.spriteIndex = 0
     this.isSaveable = false
+    this.hitbox = { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT, offsetX: 0, offsetY: 0 }
     // Note: active is managed by the pool, not reset here
   }
 
@@ -196,6 +199,15 @@ export class FallingObjectEntity implements FallingObject, Poolable {
     // Set dimensions from config
     this.width = items[itemIndex].width
     this.height = items[itemIndex].height
+
+    // Set hitbox from config
+    const hitboxConfig = items[itemIndex].hitbox
+    this.hitbox = {
+      width: hitboxConfig.width,
+      height: hitboxConfig.height,
+      offsetX: hitboxConfig.offsetX,
+      offsetY: hitboxConfig.offsetY,
+    }
 
     this.isSaveable = false
   }
