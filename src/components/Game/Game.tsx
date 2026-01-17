@@ -327,6 +327,9 @@ export function Game() {
 
           gameStateRef.current.score = Math.max(0, gameStateRef.current.score - penalty)
 
+          // Update difficulty based on new score (level can go down)
+          gameStateRef.current.difficulty = calculateDifficulty(gameStateRef.current.score)
+
           // Play bad catch sound
           sounds.playBadCatch()
 
